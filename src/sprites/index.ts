@@ -1,5 +1,15 @@
 export { Sprite } from './sprite';
+export { getBullet } from './bullet';
+export { getEffect } from './effect';
+export { getEnemyIcon } from './enemy-icon';
+export { getFlagIcon } from './flag-icon';
+export { getGameOver } from './game-over';
+export { getNumber } from './number';
+export { getPause } from './pause';
+export { getPlayerIcon } from './player-icon';
+export { getPlayerTankIcon } from './player-tank-icon';
 export { getPowerup } from './powerup';
+export { getStage } from './stage';
 export { getStructure } from './structure';
 export { getTank } from './tank';
 export { getTerrain } from './terrain';
