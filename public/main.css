@@ -1,0 +1,28 @@
+body {
+	display: flex;
+	width: 100vw;
+	height: 100vh;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+	padding: 0;
+}
+
+#container {
+	position: relative;
+}
+
+#background {
+	background-color: rgb(99, 99, 99);
+}
+
+#brick {
+	display: none;
+	background-color: rgb(0, 0, 0);
+}
+
+#game {
+	position: absolute;
+	top: 46px;
+	left: 46px;
+}

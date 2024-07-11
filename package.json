@@ -1,0 +1,19 @@
+{
+	"name": "battle-city",
+	"version": "0.0.1",
+	"description": "Battle City game",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build"
+	},
+	"keywords": [],
+	"author": "Ivan Godenov",
+	"license": "ISC",
+	"devDependencies": {
+		"typescript": "^5.5.3",
+		"vite": "^5.3.3"
+	},
+	"dependencies": {
+		"helpful-decorators": "^2.1.0"
+	}
+}
