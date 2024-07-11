@@ -1,3 +1,5 @@
+import PlayerTank from './player-tank';
+
 export default class EntitiesManager {
 	private readonly KILL_ME_NOW: number = -1;
 
@@ -34,5 +36,12 @@ export default class EntitiesManager {
 			// 	}
 			// }
 		}
+	}
+
+	public createPlayerTank(descr): void {
+		this.playerTanks.push(new PlayerTank(descr));
+		var tankIndex = this._playerTanks.length - 1;
+		this.playerTanks[tankIndex].isDead = true;
+		this.playerTanks[tankIndex].reset();
 	}
 }

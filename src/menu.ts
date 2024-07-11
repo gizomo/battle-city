@@ -1,4 +1,5 @@
 import Keyboard, { KEYS } from './modules/keyboard';
+import Gamepads from './modules/gamepads';
 import { CONSTS, SPRITE_SCALE } from './globals';
 import { getPowerup, getStructure, getTank, getTerrain } from './sprites';
 
@@ -20,6 +21,8 @@ export default class Menu {
 	}
 
 	public update(): void {
+		setInterval(Gamepads.updateForMenu, 3000);
+
 		let mode: GameMode = 'single';
 
 		if (Keyboard.handleKey(13) || Keyboard.handleChar(KEYS.SPACE)) {

@@ -6,6 +6,8 @@ export enum KEYS {
 	SPACE = ' ',
 	UP = 'W',
 	DOWN = 'S',
+	LEFT = 'A',
+	RIGHT = 'D',
 	CLEAR = 'C',
 	BOX = 'B',
 	UNDO = 'U',
@@ -19,10 +21,6 @@ class Keyboard {
 	constructor() {
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
-	}
-
-	private updateKey(keyCode: number, value: boolean): void {
-		this.keys[keyCode] = value;
 	}
 
 	@bind
@@ -44,6 +42,10 @@ class Keyboard {
 	@bind
 	private onKeyUp(event: KeyboardEvent): void {
 		this.updateKey(event.keyCode, false);
+	}
+
+	public updateKey(keyCode: number, value: boolean): void {
+		this.keys[keyCode] = value;
 	}
 
 	public handleKey(keyCode: number): boolean {

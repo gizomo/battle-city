@@ -36,7 +36,6 @@ class BattleCity {
 
 		ImageExtended.preloadImages({ spritesheet: './spritesheet.png' }).then((images: Record<string, ImageExtended>) => {
 			if (this.started) {
-				// entityManager.init();
 				// gameState.init();
 				// entityManager.initLevel();
 				// gameState.createLevel();
@@ -56,13 +55,12 @@ class BattleCity {
 	private startGame(mode: GameMode, level: number): void {
 		this.gameOptions = this.getGameOptions(mode, level);
 		this.doClear = true;
+		this.started = true;
 
-		// g_doClear = true;
-		// g_gameStarted = true;
-		// g_canvas.style.display = "";
-		// entityManager.init();
+		GAME_CANVAS.style.display = '';
+
 		// gameState.init();
-		// createBorder();
+		// entityManager.initLevel();
 		// gameState.createLevel();
 	}
 
