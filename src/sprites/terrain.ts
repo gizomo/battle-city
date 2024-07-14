@@ -1,7 +1,7 @@
-import { BRICK_CANVAS, CONSTS } from '../globals';
+import { DRAFT_CANVAS, CONSTS } from '../globals';
 import { Sprite } from './sprite';
 
-export function getTerrain(type: CONSTS, frameNumber: number): Sprite {
+export function getTerrain(type: CONSTS, frameNumber: number = 0): Sprite {
 	const mul: number = 8;
 	let x: number = 256;
 	let y: number = 80;
@@ -23,5 +23,5 @@ export function getTerrain(type: CONSTS, frameNumber: number): Sprite {
 			break;
 	}
 
-	return new Sprite(BRICK_CANVAS, x, y, 8, 8, 1, 1);
+	return new Sprite(DRAFT_CANVAS, x, y, 8, 8, 1, 1);
 }

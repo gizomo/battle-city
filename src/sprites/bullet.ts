@@ -1,4 +1,4 @@
-import { BRICK_CANVAS, CONSTS } from '../globals';
+import { DRAFT_CANVAS, CONSTS } from '../globals';
 import { Sprite } from './sprite';
 
 export function getBullet(direction: CONSTS): Sprite {
@@ -21,5 +21,5 @@ export function getBullet(direction: CONSTS): Sprite {
 			break;
 	}
 
-	return new Sprite(BRICK_CANVAS, x, y, 4, 4, 1, 1);
+	return new Sprite(DRAFT_CANVAS, x, y, 4, 4, 1, 1);
 }

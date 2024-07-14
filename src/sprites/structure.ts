@@ -1,4 +1,4 @@
-import { BRICK_CANVAS, CONSTS } from '../globals';
+import { DRAFT_CANVAS, CONSTS } from '../globals';
 import { Sprite } from './sprite';
 
 export function getStructure(type: CONSTS, look: CONSTS): Sprite {
@@ -19,6 +19,8 @@ export function getStructure(type: CONSTS, look: CONSTS): Sprite {
 			y -= mul * 4;
 			width = 16;
 			height = 16;
+			break;
+		default:
 			break;
 	}
 
@@ -45,7 +47,9 @@ export function getStructure(type: CONSTS, look: CONSTS): Sprite {
 			}
 
 			break;
+		default:
+			break;
 	}
 
-	return new Sprite(BRICK_CANVAS, x, y, width, height, 1, 1);
+	return new Sprite(DRAFT_CANVAS, x, y, width, height, 1, 1);
 }

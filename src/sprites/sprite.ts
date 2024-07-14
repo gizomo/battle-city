@@ -37,11 +37,11 @@ export class Sprite {
 		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x, y, this.width, this.height);
 	}
 
-	public drawCentredAt(ctx: CanvasRenderingContext2D, cx: number, cy: number, orientation: string, hw: number, hh: number): void {
-		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, cx - hw, cy - hh, this.width * SPRITE_SCALE, this.height * SPRITE_SCALE);
+	public drawCentredAt(ctx: CanvasRenderingContext2D, x: number, y: number, hw: number, hh: number): void {
+		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x - hw, y - hh, this.width * SPRITE_SCALE, this.height * SPRITE_SCALE);
 	}
 
-	public drawScaledAt(ctx: CanvasRenderingContext2D, cx: number, cy: number, direction: string, scale: number) {
-		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, cx - (this.width / 2) * SPRITE_SCALE, cy - (this.height / 2) * SPRITE_SCALE, this.width * SPRITE_SCALE, this.height * SPRITE_SCALE);
+	public drawScaledAt(ctx: CanvasRenderingContext2D, x: number, y: number) {
+		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x - (this.width / 2) * SPRITE_SCALE, y - (this.height / 2) * SPRITE_SCALE, this.width * SPRITE_SCALE, this.height * SPRITE_SCALE);
 	}
 }

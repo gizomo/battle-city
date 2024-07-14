@@ -1,27 +1,18 @@
-import ImageExtended from './image';
+import Game from './game';
 import Keyboard, { KEYS } from './modules/keyboard';
 import Menu from './menu';
-import { BACKGROUND_CANVAS, BRICK_CANVAS, GAME_CANVAS } from './globals';
+import { BG_CTX, DRAFT_CTX, GAME_CANVAS, GAME_CTX, UPDATE_INTERVAL } from './globals';
 import { bind } from 'helpful-decorators';
-import { clearCanvas, fillBox } from './utils';
+import { clearCanvas, fillBox, preloadImages } from './utils';
 
 class BattleCity {
-	private readonly UPDATE_INTERVAL: number = 16.666;
-
-	private gameOptions: GameOptions = {
-		playersCount: 1,
-		friendlyFire: false,
-		enemiesEnabled: true,
-		level: 0,
-	};
-
 	private menu: Menu;
+	private game: Game;
 
 	private frameTimeStamp: number;
 	private frameTimeDelta: number;
 	private frameUnits: number;
 	private parity: boolean = false;
-	private started: boolean = false;
 	private updatePaused: boolean = false;
 
 	private doClear: boolean = true;
@@ -31,37 +22,53 @@ class BattleCity {
 	private doRender: boolean = true;
 
 	constructor() {
-		this.bgContext.imageSmoothingEnabled = false;
-		this.gameContext.imageSmoothingEnabled = false;
+		BG_CTX.imageSmoothingEnabled = false;
+		GAME_CTX.imageSmoothingEnabled = false;
 
-		ImageExtended.preloadImages({ spritesheet: './spritesheet.png' }).then((images: Record<string, ImageExtended>) => {
-			if (this.started) {
+		preloadImages({ spritesheet: './spritesheet.png' }).then((images: Record<string, HTMLImageElement>) => {
+			if (this.isStarted()) {
 				// gameState.init();
 				// entityManager.initLevel();
 				// gameState.createLevel();
 			} else {
-				this.menu = new Menu(this.bgContext, this.startGame);
-				this.bgContext.save();
+				this.menu = new Menu(this.startGame);
+				BG_CTX.save();
 				GAME_CANVAS.style.display = 'none';
 				this.requestAnimationFrame();
 			}
 
-			this.brickContext.drawImage(images.spritesheet, 0, 0);
-			this.gameContext.fillStyle = 'white';
+			DRAFT_CTX.drawImage(images.spritesheet, 0, 0);
+			GAME_CTX.fillStyle = 'white';
 		});
 	}
 
 	@bind
 	private startGame(mode: GameMode, level: number): void {
-		this.gameOptions = this.getGameOptions(mode, level);
 		this.doClear = true;
-		this.started = true;
-
 		GAME_CANVAS.style.display = '';
 
-		// gameState.init();
-		// entityManager.initLevel();
-		// gameState.createLevel();
+		this.game = new Game(this.getGameOptions(mode, level), this.endGame);
+	}
+
+	@bind
+	private endGame(): void {
+		//TODO меню инициализировать
+		// entityManager._playerTanks.length = 0;
+		// entityManager.destroyLevel();
+		// g_gameStarted = false;
+		// gameState.setFreezeTimerToZero();
+		// gameState.resetSpawnTimer();
+		// this.levelSelect = false;
+		// this.menuItems.length = 0;
+		// this.selectedItem = 0;
+		// this.menuItems = ["1 PLAYER", "2 PLAYERS", "VS MODE", "INSTRUCTIONS"];
+		// g_backgroundCtx.save();
+		// g_canvas.style.display = "none";
+		// g_doClear = false;
+	}
+
+	private isStarted(): boolean {
+		return Boolean(this.game);
 	}
 
 	private getGameOptions(mode: GameMode, level: number): GameOptions {
@@ -99,29 +106,6 @@ class BattleCity {
 		this.frameTimeStamp = frameTimeStamp;
 	}
 
-	private update(delta: number): void {
-		if (this.shouldSkipUpdate()) {
-			return;
-		}
-
-		if (delta > 200) {
-			delta = this.UPDATE_INTERVAL;
-		}
-
-		const units: number = delta / this.UPDATE_INTERVAL;
-
-		if (this.started) {
-			// processDiagnostics(); // вообще по-ходу не важно
-			// entityManager.update(units);
-			// gameState.update(units);
-		} else {
-			this.menu.update();
-		}
-
-		this.frameUnits = units;
-		this.parity = !this.parity;
-	}
-
 	private shouldSkipUpdate(): boolean {
 		if (Keyboard.handleChar(KEYS.PAUSE)) {
 			this.updatePaused = !this.updatePaused;
@@ -133,6 +117,7 @@ class BattleCity {
 	@bind
 	private iterate(frameTimeStamp: number): void {
 		this.updateClocks(frameTimeStamp);
+
 		this.update(this.frameTimeDelta ?? 0);
 		this.render();
 		// handleSFXtoggles();
@@ -145,6 +130,27 @@ class BattleCity {
 		window.requestAnimationFrame(this.iterate);
 	}
 
+	private update(delta: number): void {
+		if (this.shouldSkipUpdate()) {
+			return;
+		}
+
+		if (delta > 200) {
+			delta = UPDATE_INTERVAL;
+		}
+
+		const units: number = delta / UPDATE_INTERVAL;
+
+		if (this.isStarted()) {
+			this.game.update(units);
+		} else {
+			this.menu.update();
+		}
+
+		this.frameUnits = units;
+		this.parity = !this.parity;
+	}
+
 	private render(): void {
 		if (Keyboard.handleChar(KEYS.CLEAR)) this.doClear = !this.doClear;
 		if (Keyboard.handleChar(KEYS.BOX)) this.doBox = !this.doBox;
@@ -153,14 +159,14 @@ class BattleCity {
 		if (Keyboard.handleChar(KEYS.RENDER)) this.doRender = !this.doRender;
 
 		if (this.doClear) {
-			clearCanvas(this.gameContext, 'black');
-			clearCanvas(this.bgContext);
+			clearCanvas(GAME_CTX, 'black');
+			clearCanvas(BG_CTX);
 		}
 
-		if (this.doBox) fillBox(this.gameContext, 200, 200, 50, 50, 'red');
+		if (this.doBox) fillBox(GAME_CTX, 200, 200, 50, 50, 'red');
 
 		if (this.doRender) {
-			if (this.started) {
+			if (this.isStarted()) {
 				// entityManager.render(ctx);
 				// if (g_renderSpatialDebug) spatialManager.render(ctx);
 				// gameState.render(ctx);
@@ -195,18 +201,6 @@ class BattleCity {
 		// if (g_undoBox) ctx.clearRect(200, 200, 50, 50);
 
 		// ++g_frameCounter;
-	}
-
-	public get bgContext(): CanvasRenderingContext2D {
-		return BACKGROUND_CANVAS.getContext('2d') as CanvasRenderingContext2D;
-	}
-
-	public get brickContext(): CanvasRenderingContext2D {
-		return BRICK_CANVAS.getContext('2d') as CanvasRenderingContext2D;
-	}
-
-	public get gameContext(): CanvasRenderingContext2D {
-		return GAME_CANVAS.getContext('2d') as CanvasRenderingContext2D;
 	}
 }
 

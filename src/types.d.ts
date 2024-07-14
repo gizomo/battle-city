@@ -6,3 +6,5 @@ declare type GameOptions = {
 	enemiesEnabled: boolean;
 	level: number;
 };
+
+declare type Position = { x: number; y: number };

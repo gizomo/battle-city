@@ -1,4 +1,4 @@
-import { BRICK_CANVAS } from '../globals';
+import { DRAFT_CANVAS } from '../globals';
 import { Sprite } from './sprite';
 
 export function getNumber(number: number): Sprite {
@@ -12,5 +12,5 @@ export function getNumber(number: number): Sprite {
 		y += mul;
 	}
 
-	return new Sprite(BRICK_CANVAS, x, y, 7, 7, 1, 1);
+	return new Sprite(DRAFT_CANVAS, x, y, 7, 7, 1, 1);
 }

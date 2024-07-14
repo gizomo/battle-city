@@ -1,4 +1,4 @@
-import { BRICK_CANVAS, CONSTS } from '../globals';
+import { DRAFT_CANVAS, CONSTS } from '../globals';
 import { Sprite } from './sprite';
 
 export function getTank(type: CONSTS, power: CONSTS, direction: CONSTS, frameNumber: number, life?: number): Sprite {
@@ -103,5 +103,5 @@ export function getTank(type: CONSTS, power: CONSTS, direction: CONSTS, frameNum
 			break;
 	}
 
-	return new Sprite(BRICK_CANVAS, x, y, 16, 16, 1, 1);
+	return new Sprite(DRAFT_CANVAS, x, y, 16, 16, 1, 1);
 }

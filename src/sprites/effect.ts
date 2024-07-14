@@ -1,4 +1,4 @@
-import { BRICK_CANVAS, CONSTS } from '../globals';
+import { DRAFT_CANVAS, CONSTS } from '../globals';
 import { Sprite } from './sprite';
 
 export function getEffect(type: CONSTS, frameNumber: number): Sprite {
@@ -31,5 +31,5 @@ export function getEffect(type: CONSTS, frameNumber: number): Sprite {
 			y += mul * 4;
 			break;
 	}
-	return new Sprite(BRICK_CANVAS, x, y, width, height, 1, 1);
+	return new Sprite(DRAFT_CANVAS, x, y, width, height, 1, 1);
 }

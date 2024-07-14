@@ -1,4 +1,4 @@
-import { BRICK_CANVAS, CONSTS } from '../globals';
+import { DRAFT_CANVAS, CONSTS } from '../globals';
 import { Sprite } from './sprite';
 
 export function getPowerup(type: CONSTS): Sprite {
@@ -26,5 +26,5 @@ export function getPowerup(type: CONSTS): Sprite {
 			break;
 	}
 
-	return new Sprite(BRICK_CANVAS, x, y, 16, 16, 1, 1);
+	return new Sprite(DRAFT_CANVAS, x, y, 16, 16, 1, 1);
 }

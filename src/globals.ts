@@ -1,11 +1,18 @@
 export const BACKGROUND_CANVAS: HTMLCanvasElement = window.document.getElementById('background') as HTMLCanvasElement;
-export const BRICK_CANVAS: HTMLCanvasElement = window.document.getElementById('brick') as HTMLCanvasElement;
+export const DRAFT_CANVAS: HTMLCanvasElement = window.document.getElementById('draft') as HTMLCanvasElement;
 export const GAME_CANVAS: HTMLCanvasElement = window.document.getElementById('game') as HTMLCanvasElement;
+export const BG_CTX: CanvasRenderingContext2D = BACKGROUND_CANVAS.getContext('2d') as CanvasRenderingContext2D;
+export const DRAFT_CTX: CanvasRenderingContext2D = DRAFT_CANVAS.getContext('2d') as CanvasRenderingContext2D;
+export const GAME_CTX: CanvasRenderingContext2D = GAME_CANVAS.getContext('2d') as CanvasRenderingContext2D;
 
+export const UPDATE_INTERVAL: number = 16.666;
 export const GRID_SIZE: number = 26;
+export const LEVEL_START_POSITION: Position = { x: 0, y: 0 };
 export const SPRITE_SCALE: number = 600 / 208;
 export const FULL_CIRCLE: number = Math.PI * 2;
 export const RADIANS_PER_DEGREE: number = Math.PI / 180.0;
+export const GRID_STEP = GAME_CANVAS.width / GRID_SIZE;
+export const FIRST_STEP: number = LEVEL_START_POSITION.x + GRID_STEP / 2;
 
 export enum CONSTS {
 	DIRECTION_UP,
