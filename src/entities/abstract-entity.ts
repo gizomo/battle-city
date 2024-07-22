@@ -1,28 +1,45 @@
 import { CONSTS } from '../globals';
+import type Bullet from './bullet';
+import type EntitiesManager from './manager';
 
 export default abstract class Entity {
-	private readonly id: number;
-
 	private isDead: boolean = false;
 	private _position: Position = { x: 0, y: 0 };
+
+	protected readonly manager: EntitiesManager = window.$game.entitiesManager;
 
 	protected abstract type: CONSTS;
 	protected abstract halfWidth: number;
 	protected abstract halfHeight: number;
 
+	public readonly collisional: boolean = true;
+	public readonly takeBulletHit?: (bullet: Bullet) => boolean = undefined;
+
 	public abstract update(units?: number): boolean;
 	public abstract render(): void;
 
-	constructor(params?: Record<string, any>) {
+	constructor(params: Record<string, any>) {
 		if (params) {
 			this.isDead = params.isDead ?? false;
 			this.position = params.position ?? { x: 0, y: 0 };
-			this.id = params.id ?? NaN;
 		}
 	}
 
-	public getId(): number {
-		return this.id;
+	protected findHitEntity({ x, y }: Position) {
+		return this.manager.findEntityInRange(x - this.halfWidth, y - this.halfHeight, x + this.halfWidth, y + this.halfHeight);
+	}
+
+	protected findHitEntities({ x, y }: Position): Entity[] {
+		return this.manager.findEntitiesInRange(x - this.halfWidth, y - this.halfHeight, x + this.halfWidth, y + this.halfHeight);
+	}
+
+	public get rect(): RectCoordinates {
+		return {
+			rx1: this.position.x - this.halfWidth,
+			ry1: this.position.y - this.halfHeight,
+			rx2: this.position.x + this.halfWidth,
+			ry2: this.position.y + this.halfHeight,
+		};
 	}
 
 	public set position(position: Position) {
@@ -37,7 +54,19 @@ export default abstract class Entity {
 		return 0;
 	}
 
+	public getType(): CONSTS {
+		return this.type;
+	}
+
 	public kill(): void {
 		this.isDead = true;
+	}
+
+	public resurect(): void {
+		this.isDead = false;
+	}
+
+	public isKilled(): boolean {
+		return this.isDead;
 	}
 }

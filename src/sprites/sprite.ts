@@ -33,6 +33,14 @@ export class Sprite {
 		}
 	}
 
+	public getWidth(): number {
+		return this.width;
+	}
+
+	public getHeight(): number {
+		return this.height;
+	}
+
 	public drawAt(ctx: CanvasRenderingContext2D, x: number, y: number): void {
 		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x, y, this.width, this.height);
 	}

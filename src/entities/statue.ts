@@ -1,5 +1,7 @@
 import Entity from './abstract-entity';
-import { CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, SPRITE_SCALE } from '../globals';
+import Sounds from '../modules/sounds';
+import type Bullet from './bullet';
+import { CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, SOUNDS } from '../globals';
 import { getStructure, Sprite } from '../sprites';
 
 export default class Statue extends Entity {
@@ -7,8 +9,6 @@ export default class Statue extends Entity {
 	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE;
 	protected type: CONSTS = CONSTS.STRUCTURE_FLAG;
 
-	private rotation: CONSTS = CONSTS.DIRECTION_UP;
-	private scale: number = SPRITE_SCALE;
 	private sprite: Sprite;
 
 	constructor() {
@@ -20,22 +20,17 @@ export default class Statue extends Entity {
 		});
 	}
 
-	public update(): boolean {
-		// spatialManager.unregister(this);
-		// if (this._isDeadNow)
-		//     return entityManager.KILL_ME_NOW;
-		// spatialManager.register(this);
-		return false;
-	}
-
-	public takeBulletHit(bullet: any): boolean {
+	public takeBulletHit = (bullet: Bullet) => {
 		this.sprite = getStructure(CONSTS.STRUCTURE_FLAG, CONSTS.STRUCTURE_ALL_GONE);
-		// var coords = {cx: this.cx, cy: this.cy};
-		// g_SFX.request(bullet.soundDestroyPlayer);
-		// entityManager.generateEffect("explosionBig", coords);
-		// // game over
-		// setTimeout(function () { main.gameOver(); } , 1000);
+		Sounds.request(SOUNDS.DESTROY_PLAYER);
+		this.manager.generateEffect(CONSTS.EFFECT_LARGEEXPLOSION, this);
+		this.kill();
+
 		return true;
+	};
+
+	public update(): boolean {
+		return this.isKilled();
 	}
 
 	public render(): void {

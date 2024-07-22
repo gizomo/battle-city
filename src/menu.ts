@@ -1,6 +1,6 @@
 import Gamepads from './modules/gamepads';
-import Keyboard, { KEYS } from './modules/keyboard';
-import { BG_CTX, CONSTS, SPRITE_SCALE } from './globals';
+import Keyboard from './modules/keyboard';
+import { BG_CTX, CONSTS, KEYS, SPRITE_SCALE } from './globals';
 import { clearCanvas } from './utils';
 import { getPowerup, getStructure, getTank, getTerrain } from './sprites';
 
@@ -22,7 +22,7 @@ export default class Menu {
 
 		let mode: GameMode = 'single';
 
-		if (Keyboard.handleKey(13) || Keyboard.handleChar(KEYS.SPACE)) {
+		if (Keyboard.handleKey(KEYS.ACTION) || Keyboard.handleKey(KEYS.ACTION1)) {
 			if (!this.levelsSelectionEnabled && !this.helpEnabled) {
 				switch (this.selected) {
 					case 0:
@@ -54,13 +54,13 @@ export default class Menu {
 				BG_CTX.restore();
 				this.selectGame(mode, this.selected);
 			}
-		} else if (!this.helpEnabled && (Keyboard.handleKey(38) || Keyboard.handleChar(KEYS.UP))) {
+		} else if (!this.helpEnabled && (Keyboard.handleKey(KEYS.UP1) || Keyboard.handleKey(KEYS.UP2))) {
 			this.selected--;
 
 			if (this.selected < 0) {
 				this.selected = this.items.length - 1;
 			}
-		} else if (!this.helpEnabled && (Keyboard.handleKey(40) || Keyboard.handleChar(KEYS.DOWN))) {
+		} else if (!this.helpEnabled && (Keyboard.handleKey(KEYS.DOWN1) || Keyboard.handleKey(KEYS.DOWN2))) {
 			this.selected = (this.selected + 1) % this.items.length;
 		}
 	}

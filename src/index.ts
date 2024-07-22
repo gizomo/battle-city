@@ -1,17 +1,18 @@
 import Game from './game';
-import Keyboard, { KEYS } from './modules/keyboard';
+import Keyboard from './modules/keyboard';
 import Menu from './menu';
-import { BG_CTX, DRAFT_CTX, GAME_CANVAS, GAME_CTX, UPDATE_INTERVAL } from './globals';
+import Sounds from './modules/sounds';
+import { BG_CTX, DRAFT_CTX, GAME_CANVAS, GAME_CTX, KEYS, UPDATE_INTERVAL } from './globals';
 import { bind } from 'helpful-decorators';
 import { clearCanvas, fillBox, preloadImages } from './utils';
 
 class BattleCity {
 	private menu: Menu;
-	private game: Game;
+	private game?: Game;
 
 	private frameTimeStamp: number;
 	private frameTimeDelta: number;
-	private frameUnits: number;
+	// private frameUnits: number;
 	private parity: boolean = false;
 	private updatePaused: boolean = false;
 
@@ -26,11 +27,7 @@ class BattleCity {
 		GAME_CTX.imageSmoothingEnabled = false;
 
 		preloadImages({ spritesheet: './spritesheet.png' }).then((images: Record<string, HTMLImageElement>) => {
-			if (this.isStarted()) {
-				// gameState.init();
-				// entityManager.initLevel();
-				// gameState.createLevel();
-			} else {
+			if (!this.isStarted()) {
 				this.menu = new Menu(this.startGame);
 				BG_CTX.save();
 				GAME_CANVAS.style.display = 'none';
@@ -48,23 +45,17 @@ class BattleCity {
 		GAME_CANVAS.style.display = '';
 
 		this.game = new Game(this.getGameOptions(mode, level), this.endGame);
+		window.$game = this.game;
 	}
 
 	@bind
 	private endGame(): void {
-		//TODO меню инициализировать
-		// entityManager._playerTanks.length = 0;
-		// entityManager.destroyLevel();
-		// g_gameStarted = false;
-		// gameState.setFreezeTimerToZero();
-		// gameState.resetSpawnTimer();
-		// this.levelSelect = false;
-		// this.menuItems.length = 0;
-		// this.selectedItem = 0;
-		// this.menuItems = ["1 PLAYER", "2 PLAYERS", "VS MODE", "INSTRUCTIONS"];
-		// g_backgroundCtx.save();
-		// g_canvas.style.display = "none";
-		// g_doClear = false;
+		Sounds.stopSounds();
+		this.menu = new Menu(this.startGame);
+		this.game = undefined;
+		BG_CTX.save();
+		GAME_CANVAS.style.display = 'none';
+		this.doClear = false;
 	}
 
 	private isStarted(): boolean {
@@ -107,11 +98,11 @@ class BattleCity {
 	}
 
 	private shouldSkipUpdate(): boolean {
-		if (Keyboard.handleChar(KEYS.PAUSE)) {
+		if (Keyboard.handleKey(KEYS.PAUSE)) {
 			this.updatePaused = !this.updatePaused;
 		}
 
-		return this.updatePaused && !Keyboard.handleChar(KEYS.STEP);
+		return this.updatePaused && !Keyboard.handleKey(KEYS.STEP);
 	}
 
 	@bind
@@ -121,7 +112,7 @@ class BattleCity {
 		this.update(this.frameTimeDelta ?? 0);
 		this.render();
 		// handleSFXtoggles();
-		// playSounds();
+		Sounds.playSounds();
 
 		this.requestAnimationFrame();
 	}
@@ -142,21 +133,21 @@ class BattleCity {
 		const units: number = delta / UPDATE_INTERVAL;
 
 		if (this.isStarted()) {
-			this.game.update(units);
+			this.game!.update(units);
 		} else {
 			this.menu.update();
 		}
 
-		this.frameUnits = units;
+		// this.frameUnits = units;
 		this.parity = !this.parity;
 	}
 
 	private render(): void {
-		if (Keyboard.handleChar(KEYS.CLEAR)) this.doClear = !this.doClear;
-		if (Keyboard.handleChar(KEYS.BOX)) this.doBox = !this.doBox;
-		if (Keyboard.handleChar(KEYS.UNDO)) this.undoBox = !this.undoBox;
-		if (Keyboard.handleChar(KEYS.FLIP_FLOP)) this.doFlipFlop = !this.doFlipFlop;
-		if (Keyboard.handleChar(KEYS.RENDER)) this.doRender = !this.doRender;
+		if (Keyboard.handleKey(KEYS.CLEAR)) this.doClear = !this.doClear;
+		if (Keyboard.handleKey(KEYS.BOX)) this.doBox = !this.doBox;
+		if (Keyboard.handleKey(KEYS.UNDO)) this.undoBox = !this.undoBox;
+		if (Keyboard.handleKey(KEYS.FLIP_FLOP)) this.doFlipFlop = !this.doFlipFlop;
+		if (Keyboard.handleKey(KEYS.RENDER)) this.doRender = !this.doRender;
 
 		if (this.doClear) {
 			clearCanvas(GAME_CTX, 'black');
@@ -167,9 +158,8 @@ class BattleCity {
 
 		if (this.doRender) {
 			if (this.isStarted()) {
-				// entityManager.render(ctx);
+				this.game!.render();
 				// if (g_renderSpatialDebug) spatialManager.render(ctx);
-				// gameState.render(ctx);
 			} else {
 				this.menu.render();
 			}

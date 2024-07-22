@@ -65,3 +65,48 @@ export enum CONSTS {
 	BULLET,
 	BORDER,
 }
+
+export enum SCORES {
+	BASIC = 100,
+	FAST = 200,
+	POWER = 300,
+	ARMOR = 400,
+	POWERUP = 500,
+}
+
+export enum SOUNDS {
+	BULLET_FIRE = './bullet_fire.wav',
+	BULLET_SHIELD_HIT = './bullet_shield_hit.wav',
+	BULLET_STEEL_HIT = './bullet_steel_hit.wav',
+	BULLET_BRICK_HIT = './bullet_brick_hit.wav',
+	DESTROY_PLAYER = './destroy_player.wav',
+	DESTROY_ENEMY = './destroy_enemy.wav',
+	TANK_IDLE = './tank_idle.wav',
+	TANK_MOVE = './tank_mpve.wav',
+	POWERUP_SPAWN = './powerup_spawn.wav',
+	POWERUP_PICKUP = './powerup_pickup.wav',
+	EXTRA_LIFE = './extra_life.wav',
+}
+
+export enum KEYS {
+	ACTION1 = 32,
+	UP1 = 87,
+	DOWN1 = 83,
+	LEFT1 = 65,
+	RIGHT1 = 68,
+
+	ACTION2 = 17,
+	UP2 = 38,
+	DOWN2 = 40,
+	LEFT2 = 37,
+	RIGHT2 = 39,
+
+	ACTION = 13,
+	BOX = 66,
+	CLEAR = 67,
+	FLIP_FLOP = 70,
+	STEP = 79,
+	PAUSE = 80,
+	RENDER = 82,
+	UNDO = 85,
+}

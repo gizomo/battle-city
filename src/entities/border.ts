@@ -1,5 +1,7 @@
-import { CONSTS } from '../globals';
 import Entity from './abstract-entity';
+import type Bullet from './bullet';
+import { CONSTS, SOUNDS } from '../globals';
+import Sounds from '../modules/sounds';
 
 export default class Border extends Entity {
 	protected halfWidth: number;
@@ -15,21 +17,19 @@ export default class Border extends Entity {
 		}
 	}
 
-	public takeBulletHit(bullet: any): boolean {
-		// if (bullet.player)
-		//     g_SFX.request(bullet.soundHitSteel);
+	public takeBulletHit = (bullet: Bullet) => {
+		if (bullet.isPlayer()) {
+			Sounds.request(SOUNDS.BULLET_STEEL_HIT);
+		}
+
 		return true;
-	}
+	};
 
 	public update(): boolean {
-		// spatialManager.unregister(this);
-		// if (this._isDeadNow)
-		//     return entityManager.KILL_ME_NOW;
-		// spatialManager.register(this);
-		return false;
+		return this.isKilled();
 	}
 
 	public render(): void {
-		throw new Error('Method not implemented.');
+		// There is nothing to render
 	}
 }

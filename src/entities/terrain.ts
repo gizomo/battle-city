@@ -1,5 +1,5 @@
-import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE } from '../globals';
 import Entity from './abstract-entity';
+import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE } from '../globals';
 import { getTerrain, Sprite } from '../sprites';
 
 export default class Terrain extends Entity {
@@ -7,7 +7,6 @@ export default class Terrain extends Entity {
 	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE / 2;
 	protected type: CONSTS = CONSTS.TERRAIN_BLANK;
 
-	private sprite: Sprite;
 	private animationFrame: number = 0;
 	private animationFrameCounter: number = 0;
 
@@ -17,8 +16,6 @@ export default class Terrain extends Entity {
 		if (params) {
 			this.type = params.type ?? CONSTS.TERRAIN_BLANK;
 		}
-
-		this.sprite = getTerrain(this.type);
 	}
 
 	public isWater(): boolean {
@@ -38,8 +35,6 @@ export default class Terrain extends Entity {
 			return false;
 		}
 
-		// spatialManager.unregister(this);
-
 		if (this.isWater()) {
 			this.animationFrameCounter++;
 
@@ -48,15 +43,11 @@ export default class Terrain extends Entity {
 			}
 		}
 
-		// spatialManager.register(this);
 		return false;
 	}
 
 	public render(): void {
-		if (this.isWater()) {
-			this.sprite = getTerrain(this.type, this.animationFrame);
-		}
-
-		this.sprite.drawCentredAt(GAME_CTX, this.position.x, this.position.y, this.halfWidth, this.halfHeight);
+		const sprite: Sprite = this.isWater() ? getTerrain(this.type, this.animationFrame) : getTerrain(this.type);
+		sprite.drawCentredAt(GAME_CTX, this.position.x, this.position.y, this.halfWidth, this.halfHeight);
 	}
 }

@@ -8,3 +8,5 @@ declare type GameOptions = {
 };
 
 declare type Position = { x: number; y: number };
+
+declare type RectCoordinates = { rx1: number; ry1: number; rx2: number; ry2: number };

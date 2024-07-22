@@ -1,28 +1,42 @@
 import Brick from './entities/brick';
 import EntitiesManager from './entities/manager';
 import Gamepads from './modules/gamepads';
-import { CONSTS, FIRST_STEP, GAME_CANVAS, GRID_SIZE, GRID_STEP, LEVEL_START_POSITION, UPDATE_INTERVAL } from './globals';
+import { BG_CTX, CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, LEVEL_START_POSITION, SCORES, UPDATE_INTERVAL } from './globals';
 import { levels } from './levels';
 import { enemies } from './enemies';
+import { getEnemyIcon, getFlagIcon, getGameOver, getNumber, getPlayerIcon, getPlayerTankIcon, Sprite } from './sprites';
+
+type ScoreName = Lowercase<keyof typeof SCORES>;
+
+type LevelScore = Record<ScoreName, number>;
+
+type GameStats = {
+	[level: number]: LevelScore;
+	points: number;
+};
 
 export default class Game {
-	private readonly playersCount: number;
-	private readonly friendlyFire: boolean;
-	private readonly enemiesEnabled: boolean;
-	private readonly entitiesManager: EntitiesManager = new EntitiesManager();
+	public readonly playersCount: number;
+	public readonly friendlyFire: boolean;
+	public readonly enemiesEnabled: boolean;
+	public readonly entitiesManager: EntitiesManager;
+
+	private firstPlayerStats: GameStats = { points: 0 } as GameStats;
+	private secondPlayerStats: GameStats = { points: 0 } as GameStats;
 
 	private fortress: Brick[] = [];
-	private freezeTimer: number = 0;
-	private spawnTimer: number = 0;
+
 	private gameOver: boolean = false;
 	private gameOverCalled: boolean = false;
-	private gameOverPosition: number = GAME_CANVAS.height;
+	private gameOverPosition: Position = { x: GAME_CANVAS.width / 2, y: GAME_CANVAS.height };
+	private gameOverSprite: Sprite = getGameOver();
 	private nextLevelRequested: boolean = false;
 	private level: number;
 
 	private onGameOver: () => void;
 
 	constructor({ playersCount, friendlyFire, enemiesEnabled, level }: GameOptions, onGameOver: () => void) {
+		this.entitiesManager = new EntitiesManager(this);
 		this.playersCount = playersCount;
 		this.friendlyFire = friendlyFire;
 		this.enemiesEnabled = enemiesEnabled;
@@ -33,10 +47,14 @@ export default class Game {
 		this.prepareLevel();
 	}
 
+	private hasSecondPlayer(): boolean {
+		return 2 === this.playersCount;
+	}
+
 	private createPlayersTanks(): void {
 		this.entitiesManager.generatePlayerTank(CONSTS.TANK_PLAYER1, Gamepads.getGamepad());
 
-		if (this.playersCount >= 2) {
+		if (this.hasSecondPlayer()) {
 			this.entitiesManager.generatePlayerTank(CONSTS.TANK_PLAYER2, Gamepads.getGamepad());
 		}
 	}
@@ -76,13 +94,11 @@ export default class Game {
 	}
 
 	private createLevel(): void {
-		const levelData: number[][] = levels[`stage_${this.level}`];
-
 		for (let i: number = 0; i < GRID_SIZE; i++) {
 			for (let j: number = 0; j < GRID_SIZE; j++) {
 				const position: Position = { x: FIRST_STEP + GRID_STEP * j, y: FIRST_STEP + GRID_STEP * i };
 
-				switch (levelData[i][j]) {
+				switch (this.getLevelData()[i][j]) {
 					case 0:
 						this.entitiesManager.generateBrick({ position, type: CONSTS.STRUCTURE_BRICK, look: CONSTS.STRUCTURE_WHOLE });
 						break;
@@ -141,12 +157,8 @@ export default class Game {
 		this.entitiesManager.generateStatue();
 	}
 
-	private initSpawnTimer(): void {
-		this.spawnTimer = 0;
-	}
-
-	private resetSpawnTimer(): void {
-		this.spawnTimer = 3000 / UPDATE_INTERVAL;
+	private initEnemiesSpawn(): void {
+		this.entitiesManager.resetSpawnTimer();
 	}
 
 	private prepareLevel(): void {
@@ -155,7 +167,7 @@ export default class Game {
 		this.restoreFortress();
 		this.createEnemies();
 		this.createStatue();
-		this.initSpawnTimer();
+		this.initEnemiesSpawn();
 	}
 
 	private previousLevel(): void {
@@ -178,43 +190,135 @@ export default class Game {
 		}
 	}
 
+	private setGameOver(): void {
+		if (!this.gameOver) {
+			this.gameOver = true;
+		}
+	}
+
+	private drawInfo(): void {
+		getPlayerIcon(1).drawScaledAt(BG_CTX, 685, 390);
+		getPlayerTankIcon().drawScaledAt(BG_CTX, 670, 422);
+		getNumber(Math.min(9, this.entitiesManager.getPlayerTank(1).getLifes())).drawScaledAt(BG_CTX, 695, 422);
+
+		if (this.hasSecondPlayer()) {
+			getPlayerIcon(1).drawScaledAt(BG_CTX, 685, 470);
+			getPlayerTankIcon().drawScaledAt(BG_CTX, 670, 502);
+			getNumber(Math.min(9, this.entitiesManager.getPlayerTank(2).getLifes())).drawScaledAt(BG_CTX, 695, 502);
+		}
+
+		getFlagIcon().drawScaledAt(BG_CTX, 685, 555);
+
+		const level: number = this.level + 1;
+		const firstDigit: number = Math.floor(level / 10);
+		const secondDigit: number = level % 10;
+
+		if (firstDigit > 0) {
+			getNumber(firstDigit).drawScaledAt(BG_CTX, 670, 595);
+		}
+
+		getNumber(secondDigit).drawScaledAt(BG_CTX, 695, 595);
+
+		const enemiesLeft: number = this.entitiesManager.getEnemiesTanks().length;
+		let x: number = 675;
+		let y: number = 70;
+
+		for (let i: number = 0; i < enemiesLeft; i++) {
+			y = y + ((i + 1) % 2) * 24;
+			getEnemyIcon().drawScaledAt(BG_CTX, x + (i % 2) * 24, y);
+		}
+	}
+
+	public getLevelData(): number[][] {
+		return levels[`stage_${this.level}`];
+	}
+
+	private updateStats(stats: GameStats, points: number, score: ScoreName): void {
+		stats.points += points;
+
+		if (stats[this.level]) {
+			stats[this.level] = {
+				basic: 0,
+				fast: 0,
+				power: 0,
+				armor: 0,
+				powerup: 0,
+			};
+		}
+
+		stats[this.level][score] += 1;
+	}
+
+	public addScore(player: CONSTS, type: CONSTS): void {
+		const stats: GameStats = CONSTS.TANK_PLAYER1 === player ? this.firstPlayerStats : this.secondPlayerStats;
+
+		switch (type) {
+			case CONSTS.TANK_ENEMY_BASIC:
+				this.updateStats(stats, SCORES.BASIC, 'basic');
+				break;
+			case CONSTS.TANK_ENEMY_FAST:
+				this.updateStats(stats, SCORES.FAST, 'fast');
+				break;
+			case CONSTS.TANK_ENEMY_POWER:
+				this.updateStats(stats, SCORES.POWER, 'power');
+				break;
+			case CONSTS.TANK_ENEMY_ARMOR:
+				this.updateStats(stats, SCORES.ARMOR, 'armor');
+				break;
+			case CONSTS.POWERUP_HELMET:
+			case CONSTS.POWERUP_TIMER:
+			case CONSTS.POWERUP_SHOVEL:
+			case CONSTS.POWERUP_STAR:
+			case CONSTS.POWERUP_GRENADE:
+			case CONSTS.POWERUP_TANK:
+				this.updateStats(stats, SCORES.POWERUP, 'powerup');
+				break;
+		}
+	}
+
 	public update(units: number): void {
 		this.entitiesManager.update(units);
 
 		if (this.gameOver) {
-			this.gameOverPosition = Math.max(GAME_CANVAS.height / 2, this.gameOverPosition - 2 * units);
+			this.gameOverPosition.y = Math.max(GAME_CANVAS.height / 2, this.gameOverPosition.y - 2 * units);
 
-			if (GAME_CANVAS.height / 2 === this.gameOverPosition && !this.nextLevelRequested) {
+			if (GAME_CANVAS.height / 2 === this.gameOverPosition.y && !this.nextLevelRequested) {
 				this.nextLevelRequested = true;
 
 				setTimeout(() => {
 					this.nextLevelRequested = false;
 					this.gameOverCalled = false;
-					this.gameOverPosition = GAME_CANVAS.height;
-					this.gameOver = false;
+					this.gameOverPosition.y = GAME_CANVAS.height;
 					this.onGameOver();
 				}, 2000);
 			}
 		}
 
-		this.spawnTimer -= units;
-		this.freezeTimer -= units;
-
 		if (!this.gameOverCalled && !this.entitiesManager.getPlayerTank(0).hasLifes()) {
-			if (2 === this.playersCount && !this.entitiesManager.getPlayerTank(1).hasLifes()) {
+			if (this.hasSecondPlayer() && !this.entitiesManager.getPlayerTank(1).hasLifes()) {
 				this.gameOverCalled = true;
-				setTimeout(() => this.onGameOver(), 1000);
+				setTimeout(() => this.setGameOver(), 1000);
 			}
+		}
+
+		if (!this.gameOverCalled && this.entitiesManager.getStatue().isKilled()) {
+			this.gameOverCalled = true;
+			setTimeout(() => this.setGameOver(), 1000);
 		}
 
 		if (!this.nextLevelRequested && this.entitiesManager.hasEnemies()) {
 			this.nextLevelRequested = true;
 			setTimeout(() => this.nextLevel(), 2000);
 		}
+	}
 
-		if (this.spawnTimer < 0 && this.entitiesManager.hasEnemyToSpawn()) {
-			this.entitiesManager.spawnEnemyTank();
-			this.resetSpawnTimer();
+	public render(): void {
+		if (this.gameOver) {
+			this.gameOverSprite.drawScaledAt(GAME_CTX, this.gameOverPosition.x, this.gameOverPosition.y);
 		}
+
+		this.drawInfo();
+
+		this.entitiesManager.render();
 	}
 }

@@ -1,7 +1,14 @@
-import { CONSTS } from '../globals';
+import { CONSTS, GAME_CANVAS, GAME_CTX, SPRITE_SCALE } from '../globals';
+import { Sprite, getEffect } from '../sprites';
 import Entity from './abstract-entity';
 
-type EffectOptions = Record<'cycles' | 'frames' | 'speed', number>;
+type EffectOptions = {
+	cycles: number;
+	frames: number;
+	speed: number;
+	halfWidth?: number;
+	halfHeight?: number;
+};
 
 export default class Effect extends Entity {
 	protected halfWidth: number;
@@ -27,6 +34,8 @@ export default class Effect extends Entity {
 	private animationFrameCounter: number = 0;
 	private animationCycles: number = 0;
 	private countDelta: number = 1;
+
+	public readonly collisional: boolean = false;
 
 	constructor(params: Record<string | 'target', any>) {
 		super(params);
@@ -56,6 +65,10 @@ export default class Effect extends Entity {
 		return CONSTS.EFFECT_POINTS === this.type;
 	}
 
+	public killEffect(): true {
+		return true;
+	}
+
 	public update(): boolean {
 		const numFramesSingleCycle: number = 2 * this.frames - 1;
 		const numFramesTotal: number = (numFramesSingleCycle - 1) * this.cycles + 1;
@@ -78,7 +91,18 @@ export default class Effect extends Entity {
 		return false;
 	}
 
-	public killEffect(): true {
-		return true;
+	public render(): void {
+		const sprite: Sprite = getEffect(this.type, this.animationFrame);
+
+		if (undefined === Effect.options[this.type].halfWidth) {
+			Effect.options[this.type].halfWidth = (sprite.getWidth() / 2) * SPRITE_SCALE;
+			Effect.options[this.type].halfHeight = (sprite.getHeight() / 2) * SPRITE_SCALE;
+		}
+
+		if (this.target) {
+			sprite.drawCentredAt(GAME_CTX, this.target.position.x, this.target.position.y, Effect.options[this.type].halfWidth!, Effect.options[this.type].halfHeight!);
+		} else {
+			console.log('Trying to spawn effect but have no co-ordinates');
+		}
 	}
 }

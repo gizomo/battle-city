@@ -1,18 +1,7 @@
-import { CONSTS } from '../globals';
-import Keyboard, { KEYS } from './keyboard';
+import { CONSTS, KEYS } from '../globals';
+import Keyboard from './keyboard';
 
 type PlayerKeys = Record<'up' | 'down' | 'left' | 'right' | 'action', number>;
-
-const UP1: number = Keyboard.getKeyCode(KEYS.UP);
-const DOWN1: number = Keyboard.getKeyCode(KEYS.DOWN);
-const LEFT1: number = Keyboard.getKeyCode(KEYS.LEFT);
-const RIGHT1: number = Keyboard.getKeyCode(KEYS.RIGHT);
-const ACTION1: number = Keyboard.getKeyCode(KEYS.SPACE);
-const UP2: number = 38;
-const DOWN2: number = 40;
-const LEFT2: number = 37;
-const RIGHT2: number = 39;
-const ACTION2: number = 17;
 
 class Gamepads {
 	private gamepads: (Gamepad | null)[] = window.navigator.getGamepads();
@@ -82,20 +71,20 @@ class Gamepads {
 	private getPlayerKeys(player: CONSTS = CONSTS.TANK_PLAYER1): PlayerKeys {
 		if (CONSTS.TANK_PLAYER2 === player) {
 			return {
-				up: UP2,
-				down: DOWN2,
-				left: LEFT2,
-				right: RIGHT2,
-				action: ACTION2,
+				up: KEYS.UP2,
+				down: KEYS.DOWN2,
+				left: KEYS.LEFT2,
+				right: KEYS.RIGHT2,
+				action: KEYS.ACTION2,
 			};
 		}
 
 		return {
-			up: UP1,
-			down: DOWN1,
-			left: LEFT1,
-			right: RIGHT1,
-			action: ACTION1,
+			up: KEYS.UP1,
+			down: KEYS.DOWN1,
+			left: KEYS.LEFT1,
+			right: KEYS.RIGHT1,
+			action: KEYS.ACTION1,
 		};
 	}
 }
