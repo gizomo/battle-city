@@ -25,7 +25,7 @@ export default abstract class Entity {
 		}
 	}
 
-	protected findHitEntity({ x, y }: Position) {
+	protected findHitEntity({ x, y }: Position): Entity | undefined {
 		return this.manager.findEntityInRange(x - this.halfWidth, y - this.halfHeight, x + this.halfWidth, y + this.halfHeight);
 	}
 
@@ -56,6 +56,20 @@ export default abstract class Entity {
 
 	public getType(): CONSTS {
 		return this.type;
+	}
+
+	public isPowerup(): boolean {
+		switch (this.type) {
+			case CONSTS.POWERUP_HELMET:
+			case CONSTS.POWERUP_TIMER:
+			case CONSTS.POWERUP_SHOVEL:
+			case CONSTS.POWERUP_STAR:
+			case CONSTS.POWERUP_GRENADE:
+			case CONSTS.POWERUP_TANK:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	public kill(): void {

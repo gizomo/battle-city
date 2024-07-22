@@ -1,10 +1,10 @@
 import Entity from './abstract-entity';
-import type Bullet from './bullet';
-import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE, KEYS, SOUNDS } from '../globals';
-import { getTank } from '../sprites';
-import Sounds from '../modules/sounds';
 import Keyboard from '../modules/keyboard';
 import Sounds from '../modules/sounds';
+import type Bullet from './bullet';
+import type Powerup from './powerup';
+import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, KEYS, SOUNDS } from '../globals';
+import { getTank } from '../sprites';
 
 type PlayerDefaults = {
 	position: Position;
@@ -35,6 +35,7 @@ export default class PlayerTank extends Entity {
 	private gamepad: Gamepad;
 	private moving: boolean = false;
 	private moveDistance: number = 2;
+	private slideCounter: number = 0;
 	private numberOfLives: number = 2;
 	private orientation: CONSTS = CONSTS.DIRECTION_UP;
 	private defaults: PlayerDefaults;
@@ -77,6 +78,91 @@ export default class PlayerTank extends Entity {
 
 	private get keyAction(): KEYS {
 		return this.isFirstPlayer() ? KEYS.ACTION1 : KEYS.ACTION2;
+	}
+
+	private lockToNearestGrid(): void {
+		const lock: (axle: 'x' | 'y') => void = (axle: 'x' | 'y') => {
+			const module: number = this.position[axle] % GRID_STEP;
+			this.position[axle] = this.position[axle] - module + (module >= GRID_STEP / 2 ? GRID_STEP : 0);
+		};
+
+		switch (this.orientation) {
+			case CONSTS.DIRECTION_UP:
+			case CONSTS.DIRECTION_DOWN:
+				lock('x');
+				break;
+			case CONSTS.DIRECTION_LEFT:
+			case CONSTS.DIRECTION_RIGHT:
+				lock('y');
+				break;
+			default:
+				break;
+		}
+	}
+
+	private updateDirection(): void {
+		if (Keyboard.handleKey(this.keyUp)) {
+			this.orientation = CONSTS.DIRECTION_UP;
+		} else if (Keyboard.handleKey(this.keyDown)) {
+			this.orientation = CONSTS.DIRECTION_DOWN;
+		} else if (Keyboard.handleKey(this.keyLeft)) {
+			this.orientation = CONSTS.DIRECTION_LEFT;
+		} else if (Keyboard.handleKey(this.keyRight)) {
+			this.orientation = CONSTS.DIRECTION_RIGHT;
+		}
+	}
+
+	private move(position: Position): void {
+		const entity: Entity | undefined = this.findHitEntity(position);
+
+		if (!entity || entity.isPowerup()) {
+			this.position = position;
+
+			if (entity) {
+				(entity as Powerup).pickedUp(this);
+			}
+		}
+
+		this.animationFrameCounter++;
+
+		if (0 === this.animationFrameCounter % 3) {
+			this.animationFrame = 0 === this.animationFrame ? 1 : 0;
+		}
+
+		this.moving = true;
+	}
+
+	private slide(position: Position): void {
+		if (!this.findHitEntity(position)) {
+			this.position = position;
+		}
+	}
+
+	private maybeFireBullet(): void {
+		if (0 === this.bulletsAlive || (1 === this.bulletsAlive && this.canFireTwice)) {
+			const alpha: number = 7;
+			const position: Position = this.position;
+
+			switch (this.orientation) {
+				case CONSTS.DIRECTION_UP:
+					position.x = position.x - 2;
+					position.y = position.y - this.halfHeight - alpha;
+					break;
+				case CONSTS.DIRECTION_DOWN:
+					position.x = position.x - 3;
+					position.y = position.y + this.halfHeight + alpha;
+					break;
+				case CONSTS.DIRECTION_LEFT:
+					position.x = position.x - this.halfWidth - alpha;
+					break;
+				case CONSTS.DIRECTION_RIGHT:
+					position.x = position.x + this.halfWidth + alpha;
+					break;
+			}
+
+			this.bulletsAlive++;
+			this.manager.generateBullet(position, this.orientation, this.bulletVelocity, this.bulletStrength, this);
+		}
 	}
 
 	private setForceField(forceField: ForceField): void {
@@ -192,29 +278,37 @@ export default class PlayerTank extends Entity {
 		const wasMoving: boolean = this.moving;
 		this.moving = false;
 
-		if (this.frozen) {
-			// Do nothing -- just prevent rest of ifs.
-		} else if (Keyboard.handleKey(this.keyUp)) {
-			this.orientation = CONSTS.DIRECTION_UP;
+		const distance: number = this.moveDistance * units;
+
+		if (!this.frozen) {
 			this.lockToNearestGrid();
-			this.move(units, this.cx, this.cy - this.moveDistance * units);
-		} else if (Keyboard.handleKey(this.keyDown)) {
-			this.orientation = CONSTS.DIRECTION_DOWN;
-			this.lockToNearestGrid();
-			this.move(units, this.cx, this.cy + this.moveDistance * units);
-		} else if (Keyboard.handleKey(this.keyLeft)) {
-			this.orientation = CONSTS.DIRECTION_LEFT;
-			this.lockToNearestGrid();
-			this.move(units, this.cx - this.moveDistance * units, this.cy);
-		} else if (Keyboard.handleKey(this.keyRight)) {
-			this.orientation = CONSTS.DIRECTION_RIGHT;
-			this.lockToNearestGrid();
-			this.move(units, this.cx + this.moveDistance * units, this.cy);
+
+			const movePosition: Position = this.position;
+
+			this.updateDirection();
+
+			switch (this.orientation) {
+				case CONSTS.DIRECTION_UP:
+					movePosition.y = movePosition.y - distance;
+					break;
+				case CONSTS.DIRECTION_DOWN:
+					movePosition.y = movePosition.y + distance;
+					break;
+				case CONSTS.DIRECTION_LEFT:
+					movePosition.x = movePosition.x - distance;
+					break;
+				case CONSTS.DIRECTION_RIGHT:
+					movePosition.x = movePosition.x + distance;
+					break;
+			}
+
+			this.move(movePosition);
 		}
 
-		this.maybeFireBullet();
+		if (Keyboard.handleKey(this.keyAction)) {
+			this.maybeFireBullet();
+		}
 
-		// if tank was moving but isn't moving now and is on ice...
 		if (wasMoving && !this.moving && this.manager.isOnIce(this.position)) {
 			this.slideCounter = 30;
 		}
@@ -224,21 +318,24 @@ export default class PlayerTank extends Entity {
 		}
 
 		if (this.slideCounter > 0) {
+			const slidePosition: Position = this.position;
+
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:
-					this.slide(units, this.cx, this.cy - this.moveDistance * units);
+					slidePosition.y = slidePosition.y - distance;
 					break;
 				case CONSTS.DIRECTION_DOWN:
-					this.slide(units, this.cx, this.cy + this.moveDistance * units);
+					slidePosition.y = slidePosition.y + distance;
 					break;
 				case CONSTS.DIRECTION_LEFT:
-					this.slide(units, this.cx - this.moveDistance * units, this.cy);
+					slidePosition.x = slidePosition.x - distance;
 					break;
 				case CONSTS.DIRECTION_RIGHT:
-					this.slide(units, this.cx + this.moveDistance * units, this.cy);
+					slidePosition.x = slidePosition.x + distance;
 					break;
 			}
 
+			this.slide(slidePosition);
 			this.slideCounter -= 1 * units;
 		}
 

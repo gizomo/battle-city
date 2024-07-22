@@ -75,7 +75,7 @@ export default class EnemyTank extends Entity {
 	private lockToNearestGrid(): void {
 		const lock: (axle: 'x' | 'y') => void = (axle: 'x' | 'y') => {
 			const module: number = this.position[axle] % GRID_STEP;
-			this.position.x = this.position[axle] - module + (module >= GRID_STEP / 2 ? GRID_STEP : 0);
+			this.position[axle] = this.position[axle] - module + (module >= GRID_STEP / 2 ? GRID_STEP : 0);
 		};
 
 		switch (this.orientation) {
@@ -183,10 +183,6 @@ export default class EnemyTank extends Entity {
 	}
 
 	private move(position: Position): void {
-		if (this.manager.isEnemiesFreezed()) {
-			return;
-		}
-
 		const entities: Entity[] = this.findHitEntities(position);
 
 		if (0 === entities.length) {
@@ -318,27 +314,30 @@ export default class EnemyTank extends Entity {
 		const wasMoving: boolean = this.moving;
 		this.moving = false;
 
-		this.lockToNearestGrid();
-
-		const movePosition: Position = this.position;
 		const distance: number = this.moveDistance * units;
 
-		switch (this.orientation) {
-			case CONSTS.DIRECTION_UP:
-				movePosition.y = movePosition.y - distance;
-				break;
-			case CONSTS.DIRECTION_DOWN:
-				movePosition.y = movePosition.y + distance;
-				break;
-			case CONSTS.DIRECTION_LEFT:
-				movePosition.x = movePosition.x - distance;
-				break;
-			case CONSTS.DIRECTION_RIGHT:
-				movePosition.x = movePosition.x + distance;
-				break;
-		}
+		if (!this.manager.isEnemiesFreezed()) {
+			this.lockToNearestGrid();
 
-		this.move(movePosition);
+			const movePosition: Position = this.position;
+
+			switch (this.orientation) {
+				case CONSTS.DIRECTION_UP:
+					movePosition.y = movePosition.y - distance;
+					break;
+				case CONSTS.DIRECTION_DOWN:
+					movePosition.y = movePosition.y + distance;
+					break;
+				case CONSTS.DIRECTION_LEFT:
+					movePosition.x = movePosition.x - distance;
+					break;
+				case CONSTS.DIRECTION_RIGHT:
+					movePosition.x = movePosition.x + distance;
+					break;
+			}
+
+			this.move(movePosition);
+		}
 
 		if (!this.manager.isEnemiesFreezed()) {
 			this.maybeFireBullet();
@@ -352,9 +351,9 @@ export default class EnemyTank extends Entity {
 			this.slideCounter = 0;
 		}
 
-		const slidePosition: Position = this.position;
-
 		if (this.slideCounter > 0) {
+			const slidePosition: Position = this.position;
+
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:
 					slidePosition.y = slidePosition.y - distance;

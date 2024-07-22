@@ -15,7 +15,7 @@ import { bind } from 'helpful-decorators';
 
 export default class EntitiesManager {
 	private readonly game: Game;
-	private readonly terrain: (Border | Terrain)[] = [];
+	private readonly terrain: Terrain[] = [];
 	private readonly bricks: Brick[] = [];
 	private readonly statue: Statue[] = [];
 	private readonly bullets: Bullet[] = [];
@@ -25,9 +25,9 @@ export default class EntitiesManager {
 	private readonly powerups: Powerup[] = [];
 	private readonly trees: Terrain[] = [];
 	private readonly effects: Effect[] = [];
-	private readonly border: Border[] = [];
+	private readonly borders: Border[] = [];
 	private readonly points: Effect[] = [];
-	private readonly categories: Entity[][] = [this.terrain, this.bricks, this.statue, this.bullets, this.playerTanks, this.enemyTanksInPlay, this.effects, this.trees, this.powerups, this.border, this.points];
+	private readonly categories: Entity[][] = [this.terrain, this.bricks, this.statue, this.bullets, this.playerTanks, this.enemyTanksInPlay, this.effects, this.trees, this.powerups, this.borders, this.points];
 
 	private spawnTimer: number = 0;
 	private freezeTimer: number = 0;
@@ -101,7 +101,7 @@ export default class EntitiesManager {
 	}
 
 	public generateBorder(params: { position: Position; halfWidth: number; halfHeight: number }): void {
-		this.terrain.push(new Border(params));
+		this.borders.push(new Border(params));
 	}
 
 	public generateBrick(params: { position: Position; type: CONSTS; look?: CONSTS }): void {
@@ -205,7 +205,7 @@ export default class EntitiesManager {
 		this.generateEffect(CONSTS.EFFECT_SPAWNFLASH, this.enemyTanks[0], this.putEnemyInPlay);
 	}
 
-	public findEntityInRange(x1: number, y1: number, x2: number, y2: number): Entity | boolean {
+	public findEntityInRange(x1: number, y1: number, x2: number, y2: number): Entity | undefined {
 		this.categories.forEach((category: Entity[]) => {
 			for (let i: number = 0; i < category.length; i++) {
 				if (!category[i].collisional) {
@@ -220,8 +220,23 @@ export default class EntitiesManager {
 			}
 		});
 
-		// check for outer borders
-		return x1 < 0 || x2 > GAME_CANVAS.width || y1 < 0 || y2 > GAME_CANVAS.height;
+		if (x1 < 0) {
+			return this.borders[2];
+		}
+
+		if (x2 > GAME_CANVAS.width) {
+			return this.borders[3];
+		}
+
+		if (y1 < 0) {
+			return this.borders[0];
+		}
+
+		if (y2 > GAME_CANVAS.height) {
+			return this.borders[1];
+		}
+
+		return undefined;
 	}
 
 	public findEntitiesInRange(x1: number, y1: number, x2: number, y2: number): Entity[] {
