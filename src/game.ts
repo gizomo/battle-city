@@ -36,6 +36,7 @@ export default class Game {
 	private onGameOver: () => void;
 
 	constructor({ playersCount, friendlyFire, enemiesEnabled, level }: GameOptions, onGameOver: () => void) {
+		window.$game = this;
 		this.entitiesManager = new EntitiesManager(this);
 		this.playersCount = playersCount;
 		this.friendlyFire = friendlyFire;
@@ -128,7 +129,7 @@ export default class Game {
 	}
 
 	private createEnemies(): void {
-		const enemiesData: number[] = enemies[`stage_${this.level}`];
+		const enemiesData: number[] = enemies[`stage_${this.level + 1}`];
 		let position: number = 1;
 
 		for (let i: number = 0; i < 20; i++) {
@@ -199,12 +200,12 @@ export default class Game {
 	private drawInfo(): void {
 		getPlayerIcon(1).drawScaledAt(BG_CTX, 685, 390);
 		getPlayerTankIcon().drawScaledAt(BG_CTX, 670, 422);
-		getNumber(Math.min(9, this.entitiesManager.getPlayerTank(1).getLifes())).drawScaledAt(BG_CTX, 695, 422);
+		getNumber(Math.min(9, this.entitiesManager.getPlayerTank(0).getLifes())).drawScaledAt(BG_CTX, 695, 422);
 
 		if (this.hasSecondPlayer()) {
 			getPlayerIcon(1).drawScaledAt(BG_CTX, 685, 470);
 			getPlayerTankIcon().drawScaledAt(BG_CTX, 670, 502);
-			getNumber(Math.min(9, this.entitiesManager.getPlayerTank(2).getLifes())).drawScaledAt(BG_CTX, 695, 502);
+			getNumber(Math.min(9, this.entitiesManager.getPlayerTank(1).getLifes())).drawScaledAt(BG_CTX, 695, 502);
 		}
 
 		getFlagIcon().drawScaledAt(BG_CTX, 685, 555);
@@ -230,14 +231,14 @@ export default class Game {
 	}
 
 	public getLevelData(): number[][] {
-		return levels[`stage_${this.level}`];
+		return levels[`stage_${this.level + 1}`];
 	}
 
 	private updateStats(stats: GameStats, points: number, score: ScoreName): void {
 		stats.points += points;
 
-		if (stats[this.level]) {
-			stats[this.level] = {
+		if (!stats[this.level + 1]) {
+			stats[this.level + 1] = {
 				basic: 0,
 				fast: 0,
 				power: 0,
@@ -246,7 +247,7 @@ export default class Game {
 			};
 		}
 
-		stats[this.level][score] += 1;
+		stats[this.level + 1][score] += 1;
 	}
 
 	public addScore(player: CONSTS, type: CONSTS): void {
@@ -306,19 +307,19 @@ export default class Game {
 			setTimeout(() => this.setGameOver(), 1000);
 		}
 
-		if (!this.nextLevelRequested && this.entitiesManager.hasEnemies()) {
+		if (!this.nextLevelRequested && !this.entitiesManager.hasEnemies()) {
 			this.nextLevelRequested = true;
 			setTimeout(() => this.nextLevel(), 2000);
 		}
 	}
 
 	public render(): void {
+		this.entitiesManager.render();
+
 		if (this.gameOver) {
 			this.gameOverSprite.drawScaledAt(GAME_CTX, this.gameOverPosition.x, this.gameOverPosition.y);
 		}
 
 		this.drawInfo();
-
-		this.entitiesManager.render();
 	}
 }

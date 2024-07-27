@@ -45,7 +45,6 @@ class BattleCity {
 		GAME_CANVAS.style.display = '';
 
 		this.game = new Game(this.getGameOptions(mode, level), this.endGame);
-		window.$game = this.game;
 	}
 
 	@bind

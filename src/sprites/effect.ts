@@ -31,5 +31,6 @@ export function getEffect(type: CONSTS, frameNumber: number): Sprite {
 			y += mul * 4;
 			break;
 	}
+
 	return new Sprite(DRAFT_CANVAS, x, y, width, height, 1, 1);
 }

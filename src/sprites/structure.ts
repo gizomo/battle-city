@@ -1,7 +1,7 @@
 import { DRAFT_CANVAS, CONSTS } from '../globals';
 import { Sprite } from './sprite';
 
-export function getStructure(type: CONSTS, look: CONSTS): Sprite {
+export function getStructure(type: CONSTS, look?: CONSTS): Sprite {
 	const mul: number = 8;
 	let x: number = 256;
 	let y: number = 64;

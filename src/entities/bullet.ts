@@ -1,8 +1,8 @@
+import Entity from './abstract-entity';
+import type EnemyTank from './enemy-tank';
+import type PlayerTank from './player-tank';
 import { CONSTS, GAME_CTX, SPRITE_SCALE } from '../globals';
 import { getBullet } from '../sprites';
-import Entity from './abstract-entity';
-import EnemyTank from './enemy-tank';
-import PlayerTank from './player-tank';
 
 export default class Bullet extends Entity {
 	protected halfWidth: number = (4 * SPRITE_SCALE) / 2;
@@ -33,6 +33,10 @@ export default class Bullet extends Entity {
 	}
 
 	public takeBulletHit = (bullet: Bullet) => {
+		if (this === bullet) {
+			return false;
+		}
+
 		this.kill();
 
 		return true;
@@ -50,7 +54,7 @@ export default class Bullet extends Entity {
 		const hitted: Entity | undefined = this.findHitEntities(this.position).find((entity: Entity) => Boolean(entity.takeBulletHit) && entity.takeBulletHit!(this));
 
 		if (hitted) {
-			if (CONSTS.BULLET === hitted.getType()) {
+			if (CONSTS.BULLET !== hitted.getType()) {
 				this.manager.generateEffect(CONSTS.EFFECT_SMALLEXPLOSION, this);
 			}
 

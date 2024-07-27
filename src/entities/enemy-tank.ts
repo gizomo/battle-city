@@ -18,8 +18,8 @@ type EnemyOptions = {
 };
 
 export default class EnemyTank extends Entity {
-	protected halfWidth: number;
-	protected halfHeight: number;
+	protected halfWidth: number = GRID_STEP - 3;
+	protected halfHeight: number = GRID_STEP - 3;
 	protected type: CONSTS = CONSTS.TANK_ENEMY_BASIC;
 
 	private static readonly options: Record<number, EnemyOptions> = {
@@ -234,7 +234,7 @@ export default class EnemyTank extends Entity {
 
 		if (0 === this.bulletsAlive && 0 === this.bulletDelayCounter % 30) {
 			const alpha: number = 7;
-			const position: Position = this.position;
+			const position: Position = { ...this.position };
 
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:
@@ -319,7 +319,7 @@ export default class EnemyTank extends Entity {
 		if (!this.manager.isEnemiesFreezed()) {
 			this.lockToNearestGrid();
 
-			const movePosition: Position = this.position;
+			const movePosition: Position = { ...this.position };
 
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:
@@ -352,7 +352,7 @@ export default class EnemyTank extends Entity {
 		}
 
 		if (this.slideCounter > 0) {
-			const slidePosition: Position = this.position;
+			const slidePosition: Position = { ...this.position };
 
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:

@@ -82,8 +82,8 @@ export enum SOUNDS {
 	DESTROY_PLAYER = './destroy_player.wav',
 	DESTROY_ENEMY = './destroy_enemy.wav',
 	TANK_IDLE = './tank_idle.wav',
-	TANK_MOVE = './tank_mpve.wav',
-	POWERUP_SPAWN = './powerup_spawn.wav',
+	TANK_MOVE = './tank_move.wav',
+	POWERUP_SPAWN = './powerup_spawned.wav',
 	POWERUP_PICKUP = './powerup_pickup.wav',
 	EXTRA_LIFE = './extra_life.wav',
 }

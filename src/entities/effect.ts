@@ -1,4 +1,4 @@
-import { CONSTS, GAME_CANVAS, GAME_CTX, SPRITE_SCALE } from '../globals';
+import { CONSTS, GAME_CTX, SPRITE_SCALE } from '../globals';
 import { Sprite, getEffect } from '../sprites';
 import Entity from './abstract-entity';
 
@@ -32,7 +32,6 @@ export default class Effect extends Entity {
 
 	private animationFrame: number = 0;
 	private animationFrameCounter: number = 0;
-	private animationCycles: number = 0;
 	private countDelta: number = 1;
 
 	public readonly collisional: boolean = false;

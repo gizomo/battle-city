@@ -9,7 +9,7 @@ export default class Statue extends Entity {
 	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE;
 	protected type: CONSTS = CONSTS.STRUCTURE_FLAG;
 
-	private sprite: Sprite;
+	private sprite: Sprite = getStructure(CONSTS.STRUCTURE_FLAG);
 
 	constructor() {
 		super({

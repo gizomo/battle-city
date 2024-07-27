@@ -21,8 +21,9 @@ enum ForceField {
 }
 
 export default class PlayerTank extends Entity {
-	private readonly soundIdle: string = 'tankIdle';
-	private readonly soundMove: string = 'tankMove';
+	protected halfWidth: number = GRID_STEP - 3;
+	protected halfHeight: number = GRID_STEP - 3;
+	protected type: CONSTS = CONSTS.TANK_PLAYER1;
 
 	private bulletsAlive: number = 0;
 	private bulletStrength: number = 1;
@@ -43,10 +44,6 @@ export default class PlayerTank extends Entity {
 
 	private animationFrame: 0 | 1 = 0;
 	private animationFrameCounter: number = 0;
-
-	protected halfWidth: number = GAME_CANVAS.width / GRID_SIZE - 3;
-	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE - 3;
-	protected type: CONSTS = CONSTS.TANK_PLAYER1;
 
 	constructor(params: Record<string, any>) {
 		super(params);
@@ -100,16 +97,28 @@ export default class PlayerTank extends Entity {
 		}
 	}
 
-	private updateDirection(): void {
-		if (Keyboard.handleKey(this.keyUp)) {
+	private updateDirection(): boolean {
+		if (Keyboard.isPressed(this.keyUp)) {
 			this.orientation = CONSTS.DIRECTION_UP;
-		} else if (Keyboard.handleKey(this.keyDown)) {
-			this.orientation = CONSTS.DIRECTION_DOWN;
-		} else if (Keyboard.handleKey(this.keyLeft)) {
-			this.orientation = CONSTS.DIRECTION_LEFT;
-		} else if (Keyboard.handleKey(this.keyRight)) {
-			this.orientation = CONSTS.DIRECTION_RIGHT;
+			return true;
 		}
+
+		if (Keyboard.isPressed(this.keyDown)) {
+			this.orientation = CONSTS.DIRECTION_DOWN;
+			return true;
+		}
+
+		if (Keyboard.isPressed(this.keyLeft)) {
+			this.orientation = CONSTS.DIRECTION_LEFT;
+			return true;
+		}
+
+		if (Keyboard.isPressed(this.keyRight)) {
+			this.orientation = CONSTS.DIRECTION_RIGHT;
+			return true;
+		}
+
+		return false;
 	}
 
 	private move(position: Position): void {
@@ -141,7 +150,7 @@ export default class PlayerTank extends Entity {
 	private maybeFireBullet(): void {
 		if (0 === this.bulletsAlive || (1 === this.bulletsAlive && this.canFireTwice)) {
 			const alpha: number = 7;
-			const position: Position = this.position;
+			const position: Position = { ...this.position };
 
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:
@@ -283,26 +292,26 @@ export default class PlayerTank extends Entity {
 		if (!this.frozen) {
 			this.lockToNearestGrid();
 
-			const movePosition: Position = this.position;
+			const movePosition: Position = { ...this.position };
 
-			this.updateDirection();
+			if (this.updateDirection()) {
+				switch (this.orientation) {
+					case CONSTS.DIRECTION_UP:
+						movePosition.y = movePosition.y - distance;
+						break;
+					case CONSTS.DIRECTION_DOWN:
+						movePosition.y = movePosition.y + distance;
+						break;
+					case CONSTS.DIRECTION_LEFT:
+						movePosition.x = movePosition.x - distance;
+						break;
+					case CONSTS.DIRECTION_RIGHT:
+						movePosition.x = movePosition.x + distance;
+						break;
+				}
 
-			switch (this.orientation) {
-				case CONSTS.DIRECTION_UP:
-					movePosition.y = movePosition.y - distance;
-					break;
-				case CONSTS.DIRECTION_DOWN:
-					movePosition.y = movePosition.y + distance;
-					break;
-				case CONSTS.DIRECTION_LEFT:
-					movePosition.x = movePosition.x - distance;
-					break;
-				case CONSTS.DIRECTION_RIGHT:
-					movePosition.x = movePosition.x + distance;
-					break;
+				this.move(movePosition);
 			}
-
-			this.move(movePosition);
 		}
 
 		if (Keyboard.handleKey(this.keyAction)) {
@@ -318,7 +327,7 @@ export default class PlayerTank extends Entity {
 		}
 
 		if (this.slideCounter > 0) {
-			const slidePosition: Position = this.position;
+			const slidePosition: Position = { ...this.position };
 
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:

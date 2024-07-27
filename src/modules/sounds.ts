@@ -7,7 +7,7 @@ class Sounds {
 	constructor() {
 		Object.keys(SOUNDS).forEach((key: string) => {
 			this.requests[SOUNDS[key as keyof typeof SOUNDS]] = false;
-			this.audios[SOUNDS[key as keyof typeof SOUNDS]] = new Audio(key);
+			this.audios[SOUNDS[key as keyof typeof SOUNDS]] = new Audio(SOUNDS[key as keyof typeof SOUNDS]);
 		});
 	}
 
@@ -19,11 +19,7 @@ class Sounds {
 		return SOUNDS.TANK_MOVE === sound;
 	}
 
-	private isInterruptable(sound: SOUNDS): boolean {
-		return !this.isTankIdle(sound) && !this.isTankMove(sound);
-	}
-
-	private isRepeating(sound: SOUNDS): boolean {
+	private isTankMovements(sound: SOUNDS): boolean {
 		return this.isTankIdle(sound) || this.isTankMove(sound);
 	}
 
@@ -37,10 +33,10 @@ class Sounds {
 	}
 
 	public play(sound: SOUNDS): void {
-		if (this.isInterruptable(sound) || this.audios[sound]?.paused) {
+		if ((!this.isTankIdle(sound) && !this.isTankMove(sound)) || this.audios[sound]?.paused) {
 			this.stop(sound);
 
-			if (this.isRepeating(sound)) {
+			if (this.isTankMovements(sound)) {
 				this.audios[sound].addEventListener('ended', () => this.repeat(this.audios[sound]));
 			}
 
@@ -49,7 +45,7 @@ class Sounds {
 	}
 
 	public stop(sound: SOUNDS): void {
-		if (this.isRepeating(sound)) {
+		if (this.isTankMovements(sound)) {
 			this.audios[sound].removeEventListener('ended', () => this.repeat(this.audios[sound]));
 		}
 

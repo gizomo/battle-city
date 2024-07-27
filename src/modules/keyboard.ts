@@ -30,6 +30,10 @@ class Keyboard {
 		this.updateKey(event.keyCode, false);
 	}
 
+	public isPressed(keyCode: number): boolean {
+		return this.keys[keyCode];
+	}
+
 	public updateKey(keyCode: number, value: boolean): void {
 		this.keys[keyCode] = value;
 	}

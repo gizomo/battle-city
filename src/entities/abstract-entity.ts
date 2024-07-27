@@ -58,6 +58,18 @@ export default abstract class Entity {
 		return this.type;
 	}
 
+	public isEnemyTank(): boolean {
+		switch (this.type) {
+			case CONSTS.TANK_ENEMY_BASIC:
+			case CONSTS.TANK_ENEMY_FAST:
+			case CONSTS.TANK_ENEMY_POWER:
+			case CONSTS.TANK_ENEMY_ARMOR:
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	public isPowerup(): boolean {
 		switch (this.type) {
 			case CONSTS.POWERUP_HELMET:

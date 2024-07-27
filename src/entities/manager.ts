@@ -73,7 +73,11 @@ export default class EntitiesManager {
 	@bind
 	private putEnemyInPlay() {
 		if (this.enemyTanks.length) {
-			this.enemyTanksInPlay.concat(this.enemyTanks.splice(0, 1));
+			const tank: EnemyTank | undefined = this.enemyTanks.shift();
+
+			if (tank) {
+				this.enemyTanksInPlay.push(tank);
+			}
 		}
 	}
 
@@ -89,8 +93,8 @@ export default class EntitiesManager {
 
 	public generateEffect(type: CONSTS, target: Entity, onFinished?: () => void): void {
 		if (CONSTS.EFFECT_LARGEEXPLOSION === type) {
-			type = CONSTS.EFFECT_SMALLEXPLOSION;
-			onFinished = () => this.generateEffect(CONSTS.EFFECT_LARGEEXPLOSION, target, onFinished);
+			const onOriginalFinished: (() => void) | undefined = onFinished;
+			onFinished = () => this.generateEffect(CONSTS.EFFECT_SMALLEXPLOSION, target, onOriginalFinished);
 		}
 
 		if (CONSTS.EFFECT_POINTS === type) {
@@ -155,11 +159,7 @@ export default class EntitiesManager {
 		};
 
 		this.playerTanks.push(new PlayerTank({ type, gamepad, position, playerSpriteOffset }));
-
-		const tankIndex: number = this.playerTanks.length - 1;
-
-		this.playerTanks[tankIndex].kill();
-		this.playerTanks[tankIndex].reset();
+		this.playerTanks[this.playerTanks.length - 1].reset();
 	}
 
 	public generateStatue(): void {
@@ -209,7 +209,7 @@ export default class EntitiesManager {
 		this.categories.forEach((category: Entity[]) => {
 			for (let i: number = 0; i < category.length; i++) {
 				if (!category[i].collisional) {
-					return;
+					continue;
 				}
 
 				const { rx1, ry1, rx2, ry2 }: RectCoordinates = category[i].rect;
@@ -288,12 +288,12 @@ export default class EntitiesManager {
 		this.freezeTimer -= units;
 		this.spawnTimer -= units;
 
-		this.categories.forEach((category: Entity[], index: number) => {
+		this.categories.forEach((category: Entity[]) => {
 			let i: number = 0;
 
 			while (i < category.length) {
 				if (category[i].update(units)) {
-					if (5 === index && (category[i] as EnemyTank).isUnique()) {
+					if (category[i].isEnemyTank() && (category[i] as EnemyTank).isUnique()) {
 						this.generatePowerup();
 					}
 
