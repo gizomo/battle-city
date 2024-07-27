@@ -15,6 +15,10 @@ class Gamepads {
 		return;
 	}
 
+	public hasGamepads(): boolean {
+		return Boolean(this.getGamepad());
+	}
+
 	public initForMenu(): void {
 		this.gamepads = window.navigator.getGamepads();
 
@@ -32,6 +36,8 @@ class Gamepads {
 
 	public initForGame(gp: Gamepad, player: CONSTS = CONSTS.TANK_PLAYER1): void {
 		this.gamepads = window.navigator.getGamepads();
+
+		console.log('%cFile: gamepads.ts, Line: 36', 'color: green;', gp);
 
 		const x: number = gp.axes[0];
 		const y: number = gp.axes[1];

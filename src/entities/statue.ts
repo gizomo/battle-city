@@ -1,12 +1,12 @@
 import Entity from './abstract-entity';
 import Sounds from '../modules/sounds';
 import type Bullet from './bullet';
-import { CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, SOUNDS } from '../globals';
+import { CONSTS, FIRST_STEP, GAME_CTX, GRID_STEP, SOUNDS } from '../globals';
 import { getStructure, Sprite } from '../sprites';
 
 export default class Statue extends Entity {
-	protected halfWidth: number = GAME_CANVAS.width / GRID_SIZE;
-	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE;
+	protected halfWidth: number = GRID_STEP;
+	protected halfHeight: number = GRID_STEP;
 	protected type: CONSTS = CONSTS.STRUCTURE_FLAG;
 
 	private sprite: Sprite = getStructure(CONSTS.STRUCTURE_FLAG);

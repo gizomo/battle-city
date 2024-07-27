@@ -1,13 +1,13 @@
 import Entity from './abstract-entity';
 import Sounds from '../modules/sounds';
 import type Bullet from './bullet';
-import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE, SOUNDS } from '../globals';
+import { CONSTS, GAME_CTX, GRID_STEP, SOUNDS } from '../globals';
 import { fillBox } from '../utils';
 import { getStructure, Sprite } from '../sprites';
 
 export default class Brick extends Entity {
-	protected halfWidth: number = GAME_CANVAS.width / GRID_SIZE / 2;
-	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE / 2;
+	protected halfWidth: number = GRID_STEP / 2;
+	protected halfHeight: number = GRID_STEP / 2;
 	protected type: CONSTS = CONSTS.STRUCTURE_WHOLE;
 
 	private sprite: Sprite;

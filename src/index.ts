@@ -5,6 +5,7 @@ import Sounds from './modules/sounds';
 import { BG_CTX, DRAFT_CTX, GAME_CANVAS, GAME_CTX, KEYS, UPDATE_INTERVAL } from './globals';
 import { bind } from 'helpful-decorators';
 import { clearCanvas, fillBox, preloadImages } from './utils';
+import gamepads from './modules/gamepads';
 
 class BattleCity {
 	private menu: Menu;
@@ -12,7 +13,6 @@ class BattleCity {
 
 	private frameTimeStamp: number;
 	private frameTimeDelta: number;
-	// private frameUnits: number;
 	private parity: boolean = false;
 	private updatePaused: boolean = false;
 
@@ -110,7 +110,7 @@ class BattleCity {
 
 		this.update(this.frameTimeDelta ?? 0);
 		this.render();
-		// handleSFXtoggles();
+
 		Sounds.playSounds();
 
 		this.requestAnimationFrame();
@@ -158,7 +158,6 @@ class BattleCity {
 		if (this.doRender) {
 			if (this.isStarted()) {
 				this.game!.render();
-				// if (g_renderSpatialDebug) spatialManager.render(ctx);
 			} else {
 				this.menu.render();
 			}

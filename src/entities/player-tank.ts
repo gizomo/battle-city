@@ -3,7 +3,7 @@ import Keyboard from '../modules/keyboard';
 import Sounds from '../modules/sounds';
 import type Bullet from './bullet';
 import type Powerup from './powerup';
-import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, KEYS, SOUNDS } from '../globals';
+import { CONSTS, GAME_CTX, GRID_STEP, KEYS, SOUNDS } from '../globals';
 import { getTank } from '../sprites';
 
 type PlayerDefaults = {
@@ -47,6 +47,10 @@ export default class PlayerTank extends Entity {
 
 	constructor(params: Record<string, any>) {
 		super(params);
+
+		if (params) {
+			this.gamepad = params.gamepad ?? undefined;
+		}
 
 		this.defaults = {
 			position: { ...this.position },
@@ -122,7 +126,9 @@ export default class PlayerTank extends Entity {
 	}
 
 	private move(position: Position): void {
-		const entity: Entity | undefined = this.findHitEntity(position);
+		const entity: Entity | undefined = this.findCoolidedEntity(position);
+
+		console.log('%cFile: player-tank.ts, Line: 131', 'color: green;', entity && CONSTS[entity?.getType()]);
 
 		if (!entity || entity.isPowerup()) {
 			this.position = position;
@@ -142,7 +148,7 @@ export default class PlayerTank extends Entity {
 	}
 
 	private slide(position: Position): void {
-		if (!this.findHitEntity(position)) {
+		if (!this.findCoolidedEntity(position)) {
 			this.position = position;
 		}
 	}
@@ -154,11 +160,9 @@ export default class PlayerTank extends Entity {
 
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:
-					position.x = position.x - 2;
 					position.y = position.y - this.halfHeight - alpha;
 					break;
 				case CONSTS.DIRECTION_DOWN:
-					position.x = position.x - 3;
 					position.y = position.y + this.halfHeight + alpha;
 					break;
 				case CONSTS.DIRECTION_LEFT:
@@ -231,6 +235,10 @@ export default class PlayerTank extends Entity {
 
 	public addExtraLife(): void {
 		this.numberOfLives++;
+	}
+
+	public getGamepad(): Gamepad {
+		return this.gamepad;
 	}
 
 	public getLifes(): number {
@@ -314,7 +322,7 @@ export default class PlayerTank extends Entity {
 			}
 		}
 
-		if (Keyboard.handleKey(this.keyAction)) {
+		if (Keyboard.isPressed(this.keyAction)) {
 			this.maybeFireBullet();
 		}
 

@@ -1,12 +1,12 @@
 import Entity from './abstract-entity';
 import PlayerTank from './player-tank';
 import Sounds from '../modules/sounds';
-import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE, SCORES, SOUNDS, SPRITE_SCALE } from '../globals';
+import { CONSTS, GAME_CTX, GRID_STEP, SCORES, SOUNDS, SPRITE_SCALE } from '../globals';
 import { getPowerup, Sprite } from '../sprites';
 
 export default class Powerup extends Entity {
-	protected halfWidth: number = GAME_CANVAS.width / GRID_SIZE;
-	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE;
+	protected halfWidth: number = GRID_STEP;
+	protected halfHeight: number = GRID_STEP;
 	protected type: CONSTS;
 
 	public readonly points: number = SCORES.POWERUP;

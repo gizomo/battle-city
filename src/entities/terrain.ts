@@ -1,10 +1,10 @@
 import Entity from './abstract-entity';
-import { CONSTS, GAME_CANVAS, GAME_CTX, GRID_SIZE } from '../globals';
+import { CONSTS, GAME_CTX, GRID_STEP } from '../globals';
 import { getTerrain, Sprite } from '../sprites';
 
 export default class Terrain extends Entity {
-	protected halfWidth: number = GAME_CANVAS.width / GRID_SIZE / 2;
-	protected halfHeight: number = GAME_CANVAS.height / GRID_SIZE / 2;
+	protected halfWidth: number = GRID_STEP / 2;
+	protected halfHeight: number = GRID_STEP / 2;
 	protected type: CONSTS = CONSTS.TERRAIN_BLANK;
 
 	private animationFrame: number = 0;

@@ -147,7 +147,7 @@ export default class EntitiesManager {
 		this.fortressHandle((brick: Brick) => brick.kill());
 	}
 
-	public generateEnemyTank(params: { position: Position; type: CONSTS; powerup: CONSTS }): void {
+	public generateEnemyTank(params: { position: Position; type: CONSTS; power: CONSTS }): void {
 		this.enemyTanks.push(new EnemyTank(params));
 	}
 
@@ -172,6 +172,10 @@ export default class EntitiesManager {
 
 	public getPlayerTank(index: number): PlayerTank {
 		return this.playerTanks[index];
+	}
+
+	public getPlayerTanks(): PlayerTank[] {
+		return this.playerTanks;
 	}
 
 	public getEnemiesTanks(): EnemyTank[] {
@@ -205,20 +209,30 @@ export default class EntitiesManager {
 		this.generateEffect(CONSTS.EFFECT_SPAWNFLASH, this.enemyTanks[0], this.putEnemyInPlay);
 	}
 
-	public findEntityInRange(x1: number, y1: number, x2: number, y2: number): Entity | undefined {
-		this.categories.forEach((category: Entity[]) => {
-			for (let i: number = 0; i < category.length; i++) {
-				if (!category[i].collisional) {
+	public findCollidedEntity(x1: number, y1: number, x2: number, y2: number, exceptEntity: Entity): Entity | undefined {
+		let entity: Entity | undefined = undefined;
+
+		this.categories.some((entities: Entity[]) => {
+			for (let i: number = 0; i < entities.length; i++) {
+				if (!entities[i].collisional || entities[i] === exceptEntity) {
 					continue;
 				}
 
-				const { rx1, ry1, rx2, ry2 }: RectCoordinates = category[i].rect;
+				const { rx1, ry1, rx2, ry2 }: RectCoordinates = entities[i].rect;
 
 				if (x1 < rx2 && x2 > rx1 && y1 < ry2 && y2 > ry1) {
-					return category[i];
+					return (entity = entities[i]);
 				}
 			}
+
+			if (entity) {
+				return true;
+			}
 		});
+
+		if (entity) {
+			return entity;
+		}
 
 		if (x1 < 0) {
 			return this.borders[2];
@@ -239,7 +253,7 @@ export default class EntitiesManager {
 		return undefined;
 	}
 
-	public findEntitiesInRange(x1: number, y1: number, x2: number, y2: number): Entity[] {
+	public findCollidedEntities(x1: number, y1: number, x2: number, y2: number): Entity[] {
 		const entities: Entity[] = [];
 
 		this.categories.forEach((category: Entity[]) => {

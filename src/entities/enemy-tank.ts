@@ -183,7 +183,7 @@ export default class EnemyTank extends Entity {
 	}
 
 	private move(position: Position): void {
-		const entities: Entity[] = this.findHitEntities(position);
+		const entities: Entity[] = this.findCollidedEntities(position);
 
 		if (0 === entities.length) {
 			this.position = position;
@@ -191,7 +191,7 @@ export default class EnemyTank extends Entity {
 		} else if (this.doesContainUncrossableObject(entities)) {
 			this.changeDirection();
 		} else if (this.doesContainTank(entities)) {
-			if (this.doesContainTank(this.findHitEntities(this.position))) {
+			if (this.doesContainTank(this.findCollidedEntities(this.position))) {
 				if (!this.isAnyTankInListAllowedToMove(entities)) {
 					this.canMoveWhileColliding = true;
 					this.position = position;
@@ -224,7 +224,7 @@ export default class EnemyTank extends Entity {
 	}
 
 	private slide(position: Position): void {
-		if (!this.findHitEntity(position)) {
+		if (!this.findCoolidedEntity(position)) {
 			this.position = position;
 		}
 	}
@@ -238,11 +238,9 @@ export default class EnemyTank extends Entity {
 
 			switch (this.orientation) {
 				case CONSTS.DIRECTION_UP:
-					position.x = position.x - 2;
 					position.y = position.y - this.halfHeight - alpha;
 					break;
 				case CONSTS.DIRECTION_DOWN:
-					position.x = position.x - 3;
 					position.y = position.y + this.halfHeight + alpha;
 					break;
 				case CONSTS.DIRECTION_LEFT:

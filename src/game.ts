@@ -1,10 +1,11 @@
-import Brick from './entities/brick';
 import EntitiesManager from './entities/manager';
 import Gamepads from './modules/gamepads';
-import { BG_CTX, CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, LEVEL_START_POSITION, SCORES, UPDATE_INTERVAL } from './globals';
-import { levels } from './levels';
+import type Brick from './entities/brick';
+import type PlayerTank from './entities/player-tank';
+import { BG_CTX, CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, SCORES } from './globals';
 import { enemies } from './enemies';
 import { getEnemyIcon, getFlagIcon, getGameOver, getNumber, getPlayerIcon, getPlayerTankIcon, Sprite } from './sprites';
+import { levels } from './levels';
 
 type ScoreName = Lowercase<keyof typeof SCORES>;
 
@@ -67,7 +68,7 @@ export default class Game {
 				y: GAME_CANVAS.height / 26,
 			},
 			type,
-			powerup,
+			power: powerup,
 		});
 	}
 
@@ -277,7 +278,15 @@ export default class Game {
 		}
 	}
 
+	private updateGamepads(): void {
+		if (Gamepads.hasGamepads()) {
+			this.entitiesManager.getPlayerTanks().forEach((tank: PlayerTank) => Gamepads.initForGame(tank.getGamepad(), tank.getType()));
+		}
+	}
+
 	public update(units: number): void {
+		this.updateGamepads();
+
 		this.entitiesManager.update(units);
 
 		if (this.gameOver) {

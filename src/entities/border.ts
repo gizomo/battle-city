@@ -1,7 +1,7 @@
 import Entity from './abstract-entity';
+import Sounds from '../modules/sounds';
 import type Bullet from './bullet';
 import { CONSTS, SOUNDS } from '../globals';
-import Sounds from '../modules/sounds';
 
 export default class Border extends Entity {
 	protected halfWidth: number;

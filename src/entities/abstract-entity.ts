@@ -25,12 +25,12 @@ export default abstract class Entity {
 		}
 	}
 
-	protected findHitEntity({ x, y }: Position): Entity | undefined {
-		return this.manager.findEntityInRange(x - this.halfWidth, y - this.halfHeight, x + this.halfWidth, y + this.halfHeight);
+	protected findCoolidedEntity({ x, y }: Position): Entity | undefined {
+		return this.manager.findCollidedEntity(x - this.halfWidth, y - this.halfHeight, x + this.halfWidth, y + this.halfHeight, this);
 	}
 
-	protected findHitEntities({ x, y }: Position): Entity[] {
-		return this.manager.findEntitiesInRange(x - this.halfWidth, y - this.halfHeight, x + this.halfWidth, y + this.halfHeight);
+	protected findCollidedEntities({ x, y }: Position): Entity[] {
+		return this.manager.findCollidedEntities(x - this.halfWidth, y - this.halfHeight, x + this.halfWidth, y + this.halfHeight);
 	}
 
 	public get rect(): RectCoordinates {
