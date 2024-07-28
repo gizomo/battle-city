@@ -8,8 +8,8 @@ export class Sprite {
 	private height: number;
 	private halfWidth: number;
 	private halfHeight: number;
-	private scaleX: number;
-	private scaleY: number;
+	private scaledWidth: number;
+	private scaledHeight: number;
 
 	constructor(image: HTMLCanvasElement, x: number, y: number, width: number, height: number, columns: number = 1, rows: number = 1) {
 		this.image = image;
@@ -21,15 +21,13 @@ export class Sprite {
 			this.height = height;
 			this.halfWidth = width / 2;
 			this.halfHeight = height / 2;
-			this.scaleX = (GAME_CANVAS.width / GRID_SIZE / this.width) * columns;
-			this.scaleY = (GAME_CANVAS.height / GRID_SIZE / this.height) * rows;
+			this.scaledWidth = this.width * SPRITE_SCALE;
+			this.scaledHeight = this.height * SPRITE_SCALE;
 		} else {
 			this.width = this.image.width;
 			this.height = this.image.height;
 			this.x = 0;
 			this.y = 0;
-			this.scaleX = 1;
-			this.scaleY = 1;
 		}
 	}
 
@@ -46,10 +44,10 @@ export class Sprite {
 	}
 
 	public drawCentredAt(ctx: CanvasRenderingContext2D, x: number, y: number, hw: number, hh: number): void {
-		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x - hw, y - hh, this.width * SPRITE_SCALE, this.height * SPRITE_SCALE);
+		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x - hw, y - hh, this.scaledWidth, this.scaledHeight);
 	}
 
 	public drawScaledAt(ctx: CanvasRenderingContext2D, x: number, y: number) {
-		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x - (this.width / 2) * SPRITE_SCALE, y - (this.height / 2) * SPRITE_SCALE, this.width * SPRITE_SCALE, this.height * SPRITE_SCALE);
+		ctx.drawImage(this.image, this.x, this.y, this.width, this.height, x - this.halfWidth * SPRITE_SCALE, y - this.halfHeight * SPRITE_SCALE, this.scaledWidth, this.scaledHeight);
 	}
 }

@@ -1,13 +1,11 @@
+import Entity from './abstract-entity';
 import { CONSTS, GAME_CTX, SPRITE_SCALE } from '../globals';
 import { Sprite, getEffect } from '../sprites';
-import Entity from './abstract-entity';
 
 type EffectOptions = {
 	cycles: number;
 	frames: number;
 	speed: number;
-	halfWidth?: number;
-	halfHeight?: number;
 };
 
 export default class Effect extends Entity {
@@ -33,8 +31,6 @@ export default class Effect extends Entity {
 	private animationFrame: number = 0;
 	private animationFrameCounter: number = 0;
 	private countDelta: number = 1;
-
-	public readonly collisional: boolean = false;
 
 	constructor(params: Record<string | 'target', any>) {
 		super(params);
@@ -93,13 +89,13 @@ export default class Effect extends Entity {
 	public render(): void {
 		const sprite: Sprite = getEffect(this.type, this.animationFrame);
 
-		if (undefined === Effect.options[this.type].halfWidth) {
-			Effect.options[this.type].halfWidth = (sprite.getWidth() / 2) * SPRITE_SCALE;
-			Effect.options[this.type].halfHeight = (sprite.getHeight() / 2) * SPRITE_SCALE;
+		if (undefined === this.halfWidth) {
+			this.halfWidth = (sprite.getWidth() / 2) * SPRITE_SCALE;
+			this.halfHeight = (sprite.getHeight() / 2) * SPRITE_SCALE;
 		}
 
 		if (this.target) {
-			sprite.drawCentredAt(GAME_CTX, this.target.position.x, this.target.position.y, Effect.options[this.type].halfWidth!, Effect.options[this.type].halfHeight!);
+			sprite.drawCentredAt(GAME_CTX, this.target.position.x, this.target.position.y, this.halfWidth!, this.halfHeight!);
 		} else {
 			console.log('Trying to spawn effect but have no co-ordinates');
 		}

@@ -29,7 +29,7 @@ export default class Powerup extends Entity {
 		return CONSTS.POWERUP_TANK === this.type;
 	}
 
-	public pickedUp(tank: PlayerTank): void {
+	public pickUp(tank: PlayerTank): void {
 		if (this.isExtraLife()) {
 			Sounds.request(SOUNDS.EXTRA_LIFE);
 		} else {

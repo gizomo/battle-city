@@ -152,13 +152,12 @@ export default class EntitiesManager {
 	}
 
 	public generatePlayerTank(type: CONSTS, gamepad?: Gamepad): void {
-		const playerSpriteOffset: number = CONSTS.TANK_PLAYER1 === type ? 0 : 128;
 		const position: Position = {
-			x: GAME_CANVAS.width / 26 + (GAME_CANVAS.width / 13) * (CONSTS.TANK_PLAYER1 === type ? 4 : 8),
-			y: GAME_CANVAS.height / 26 + (GAME_CANVAS.height / 13) * 12,
+			x: GRID_STEP + (GAME_CANVAS.width / 13) * (CONSTS.TANK_PLAYER1 === type ? 4 : 8),
+			y: GRID_STEP + (GAME_CANVAS.height / 13) * 12,
 		};
 
-		this.playerTanks.push(new PlayerTank({ type, gamepad, position, playerSpriteOffset }));
+		this.playerTanks.push(new PlayerTank({ type, gamepad, position }));
 		this.playerTanks[this.playerTanks.length - 1].reset();
 	}
 
@@ -214,7 +213,7 @@ export default class EntitiesManager {
 
 		this.categories.some((entities: Entity[]) => {
 			for (let i: number = 0; i < entities.length; i++) {
-				if (!entities[i].collisional || entities[i] === exceptEntity) {
+				if (!entities[i].isCollisional() || entities[i] === exceptEntity) {
 					continue;
 				}
 
@@ -258,7 +257,7 @@ export default class EntitiesManager {
 
 		this.categories.forEach((category: Entity[]) => {
 			for (let i: number = 0; i < category.length; i++) {
-				if (!category[i].collisional) {
+				if (!category[i].isCollisional()) {
 					continue;
 				}
 

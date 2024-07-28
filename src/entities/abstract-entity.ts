@@ -12,7 +12,6 @@ export default abstract class Entity {
 	protected abstract halfWidth: number;
 	protected abstract halfHeight: number;
 
-	public readonly collisional: boolean = true;
 	public readonly takeBulletHit?: (bullet: Bullet) => boolean = undefined;
 
 	public abstract update(units?: number): boolean;
@@ -56,6 +55,28 @@ export default abstract class Entity {
 
 	public getType(): CONSTS {
 		return this.type;
+	}
+
+	public isCollisional(): boolean {
+		switch (this.type) {
+			case CONSTS.TERRAIN_TREES:
+			case CONSTS.TERRAIN_ICE:
+			case CONSTS.TERRAIN_BLANK:
+			// case CONSTS.POWERUP_HELMET:
+			// case CONSTS.POWERUP_TIMER:
+			// case CONSTS.POWERUP_SHOVEL:
+			// case CONSTS.POWERUP_STAR:
+			// case CONSTS.POWERUP_GRENADE:
+			// case CONSTS.POWERUP_TANK:
+			case CONSTS.EFFECT_SPAWNFLASH:
+			case CONSTS.EFFECT_SMALLEXPLOSION:
+			case CONSTS.EFFECT_LARGEEXPLOSION:
+			case CONSTS.EFFECT_INVULNERABLE:
+			case CONSTS.EFFECT_POINTS:
+				return false;
+			default:
+				return true;
+		}
 	}
 
 	public isEnemyTank(): boolean {

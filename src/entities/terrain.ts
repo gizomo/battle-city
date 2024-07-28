@@ -16,8 +16,6 @@ export default class Terrain extends Entity {
 		if (params) {
 			this.type = params.type ?? CONSTS.TERRAIN_BLANK;
 		}
-
-		this.collisional = !this.isTrees() || !this.isIce();
 	}
 
 	public isWater(): boolean {

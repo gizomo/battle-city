@@ -9,6 +9,7 @@ const MENU: string[] = ['1 PLAYER', '2 PLAYERS', 'VS MODE', 'INSTRUCTIONS'];
 export default class Menu {
 	private readonly selectGame: (mode: GameMode, level: number) => void;
 	private readonly items: (number | string)[] = MENU;
+	private mode: GameMode = 'single';
 	private selected: number = 0;
 	private levelsSelectionEnabled: boolean = false;
 	private helpEnabled: boolean = false;
@@ -20,19 +21,17 @@ export default class Menu {
 	public update(): void {
 		setInterval(() => Gamepads.initForMenu(), 3000);
 
-		let mode: GameMode = 'single';
-
 		if (Keyboard.handleKey(KEYS.ACTION) || Keyboard.handleKey(KEYS.ACTION1)) {
 			if (!this.levelsSelectionEnabled && !this.helpEnabled) {
 				switch (this.selected) {
 					case 0:
-						mode = 'single';
+						this.mode = 'single';
 						break;
 					case 1:
-						mode = 'tandem';
+						this.mode = 'tandem';
 						break;
 					case 2:
-						mode = 'versus';
+						this.mode = 'versus';
 						break;
 					case 3:
 						this.helpEnabled = true;
@@ -52,7 +51,7 @@ export default class Menu {
 			} else if (this.levelsSelectionEnabled) {
 				clearCanvas(BG_CTX);
 				BG_CTX.restore();
-				this.selectGame(mode, this.selected);
+				this.selectGame(this.mode, this.selected);
 			}
 		} else if (!this.helpEnabled && (Keyboard.handleKey(KEYS.UP1) || Keyboard.handleKey(KEYS.UP2))) {
 			this.selected--;

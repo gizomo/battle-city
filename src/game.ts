@@ -204,7 +204,7 @@ export default class Game {
 		getNumber(Math.min(9, this.entitiesManager.getPlayerTank(0).getLifes())).drawScaledAt(BG_CTX, 695, 422);
 
 		if (this.hasSecondPlayer()) {
-			getPlayerIcon(1).drawScaledAt(BG_CTX, 685, 470);
+			getPlayerIcon(2).drawScaledAt(BG_CTX, 685, 470);
 			getPlayerTankIcon().drawScaledAt(BG_CTX, 670, 502);
 			getNumber(Math.min(9, this.entitiesManager.getPlayerTank(1).getLifes())).drawScaledAt(BG_CTX, 695, 502);
 		}

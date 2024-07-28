@@ -10,7 +10,7 @@ export function getEffect(type: CONSTS, frameNumber: number): Sprite {
 
 	switch (type) {
 		case CONSTS.EFFECT_SPAWNFLASH:
-			x = x + mul * 0 + mul * frameNumber;
+			x = x + mul * frameNumber;
 			break;
 		case CONSTS.EFFECT_SMALLEXPLOSION:
 			x = x + mul * frameNumber;

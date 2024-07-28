@@ -49,6 +49,7 @@ export default class PlayerTank extends Entity {
 		super(params);
 
 		if (params) {
+			this.type = params.type ?? CONSTS.TANK_PLAYER1;
 			this.gamepad = params.gamepad ?? undefined;
 		}
 
@@ -128,13 +129,11 @@ export default class PlayerTank extends Entity {
 	private move(position: Position): void {
 		const entity: Entity | undefined = this.findCoolidedEntity(position);
 
-		console.log('%cFile: player-tank.ts, Line: 131', 'color: green;', entity && CONSTS[entity?.getType()]);
-
 		if (!entity || entity.isPowerup()) {
 			this.position = position;
 
 			if (entity) {
-				(entity as Powerup).pickedUp(this);
+				(entity as Powerup).pickUp(this);
 			}
 		}
 
