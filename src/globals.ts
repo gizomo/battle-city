@@ -102,11 +102,7 @@ export enum KEYS {
 	RIGHT2 = 39,
 
 	ACTION = 13,
-	BOX = 66,
 	CLEAR = 67,
-	FLIP_FLOP = 70,
 	STEP = 79,
 	PAUSE = 80,
-	RENDER = 82,
-	UNDO = 85,
 }

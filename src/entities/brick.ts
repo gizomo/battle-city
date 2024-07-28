@@ -91,11 +91,11 @@ export default class Brick extends Entity {
 
 		if ([true, false].toString() === this.horizontal.toString()) {
 			if ([true, false].toString() === this.vertical.toString()) {
-				fillBox(GAME_CTX, Math.floor(this.position.x - this.halfWidth), this.position.y - this.halfHeight - 1, this.halfWidth + 2, this.halfHeight + 1, '#000');
+				fillBox(GAME_CTX, this.position.x - this.halfWidth, this.position.y - this.halfHeight - 1, this.halfWidth + 2, this.halfHeight + 1, '#000');
 			}
 
 			if ([false, true].toString() === this.vertical.toString()) {
-				fillBox(GAME_CTX, Math.floor(this.position.x - this.halfWidth), this.position.y, this.halfWidth + 2, this.halfHeight + 1, '#000');
+				fillBox(GAME_CTX, this.position.x - this.halfWidth, this.position.y, this.halfWidth + 2, this.halfHeight + 1, '#000');
 			}
 		} else if ([false, true].toString() === this.horizontal.toString()) {
 			if ([true, false].toString() === this.vertical.toString()) {

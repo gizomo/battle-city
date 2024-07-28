@@ -262,7 +262,7 @@ export default class PlayerTank extends Entity {
 
 	public takeBulletHit = (bullet: Bullet) => {
 		if (!this.isKilled() && this.hasNoField()) {
-			if (bullet.isPlayer() && window.$game.friendlyFire) {
+			if (bullet.isPlayer() && this.manager.game.friendlyFire) {
 				this.frozen = true;
 				setTimeout(() => (this.frozen = false), 3000);
 			} else {

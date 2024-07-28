@@ -265,10 +265,6 @@ export default class EnemyTank extends Entity {
 		return this.canMoveWhileColliding;
 	}
 
-	public isUnique(): boolean {
-		return CONSTS.TANK_POWER_DROPSPOWERUP === this.power;
-	}
-
 	public decrementBulletCount(): void {
 		this.bulletsAlive = Math.max(0, this.bulletsAlive - 1);
 	}
@@ -285,7 +281,7 @@ export default class EnemyTank extends Entity {
 				Sounds.request(SOUNDS.BULLET_SHIELD_HIT);
 				this.numberOfLives -= 1;
 			} else {
-				window.$game.addScore(bullet.tank.getType(), this.type);
+				this.manager.game.addScore(bullet.tank.getType(), this.type);
 
 				if (CONSTS.TANK_POWER_DROPSPOWERUP === this.power) {
 					this.manager.generatePowerup();

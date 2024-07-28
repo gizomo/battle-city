@@ -14,7 +14,7 @@ import { CONSTS, FIRST_STEP, GAME_CANVAS, GRID_SIZE, GRID_STEP, SOUNDS, UPDATE_I
 import { bind } from 'helpful-decorators';
 
 export default class EntitiesManager {
-	private readonly game: Game;
+	public readonly game: Game;
 	private readonly terrain: Terrain[] = [];
 	private readonly bricks: Brick[] = [];
 	private readonly statue: Statue[] = [];
@@ -301,16 +301,12 @@ export default class EntitiesManager {
 		this.freezeTimer -= units;
 		this.spawnTimer -= units;
 
-		this.categories.forEach((category: Entity[]) => {
+		this.categories.forEach((entities: Entity[]) => {
 			let i: number = 0;
 
-			while (i < category.length) {
-				if (category[i].update(units)) {
-					if (category[i].isEnemyTank() && (category[i] as EnemyTank).isUnique()) {
-						this.generatePowerup();
-					}
-
-					category.splice(i, 1);
+			while (i < entities.length) {
+				if (entities[i].update(units)) {
+					entities.splice(i, 1);
 				} else {
 					++i;
 				}
