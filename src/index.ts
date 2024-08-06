@@ -7,7 +7,7 @@ import { bind } from 'helpful-decorators';
 import { clearCanvas, preloadImages } from './utils';
 
 class BattleCity {
-	private menu: Menu;
+	private menu?: Menu;
 	private game?: Game;
 
 	private frameTimeStamp: number;
@@ -39,14 +39,15 @@ class BattleCity {
 		this.doClear = true;
 		GAME_CANVAS.style.display = '';
 
+		this.menu = undefined;
 		this.game = new Game(this.getGameOptions(mode, level), this.endGame);
 	}
 
 	@bind
 	private endGame(): void {
 		Sounds.stopSounds();
-		this.menu = new Menu(this.startGame);
 		this.game = undefined;
+		this.menu = new Menu(this.startGame);
 		BG_CTX.save();
 		GAME_CANVAS.style.display = 'none';
 		this.doClear = false;
@@ -129,7 +130,7 @@ class BattleCity {
 		if (this.isStarted()) {
 			this.game!.update(units);
 		} else {
-			this.menu.update();
+			this.menu?.update();
 		}
 
 		this.parity = !this.parity;
@@ -146,7 +147,7 @@ class BattleCity {
 		if (this.isStarted()) {
 			this.game!.render();
 		} else {
-			this.menu.render();
+			this.menu?.render();
 		}
 	}
 }

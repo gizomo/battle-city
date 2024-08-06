@@ -8,7 +8,7 @@ const MENU: string[] = ['1 PLAYER', '2 PLAYERS', 'VS MODE', 'INSTRUCTIONS'];
 
 export default class Menu {
 	private readonly selectGame: (mode: GameMode, level: number) => void;
-	private readonly items: (number | string)[] = MENU;
+	private readonly items: (number | string)[] = [...MENU];
 	private mode: GameMode = 'single';
 	private selected: number = 0;
 	private levelsSelectionEnabled: boolean = false;
@@ -53,13 +53,13 @@ export default class Menu {
 				BG_CTX.restore();
 				this.selectGame(this.mode, this.selected);
 			}
-		} else if (!this.helpEnabled && (Keyboard.handleKey(KEYS.UP1) || Keyboard.handleKey(KEYS.UP2))) {
+		} else if (!this.helpEnabled && Keyboard.handleKey(KEYS.UP1)) {
 			this.selected--;
 
 			if (this.selected < 0) {
 				this.selected = this.items.length - 1;
 			}
-		} else if (!this.helpEnabled && (Keyboard.handleKey(KEYS.DOWN1) || Keyboard.handleKey(KEYS.DOWN2))) {
+		} else if (!this.helpEnabled && Keyboard.handleKey(KEYS.DOWN1)) {
 			this.selected = (this.selected + 1) % this.items.length;
 		}
 	}

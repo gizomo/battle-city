@@ -30,7 +30,7 @@ export default class Statue extends Entity {
 	};
 
 	public update(): boolean {
-		return this.isKilled();
+		return false;
 	}
 
 	public render(): void {

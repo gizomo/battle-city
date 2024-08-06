@@ -2,7 +2,7 @@ import { bind } from 'helpful-decorators';
 import { KEYS } from '../globals';
 
 class Keyboard {
-	private readonly keys: boolean[] = [];
+	private readonly keys: Record<number, boolean> = {};
 
 	constructor() {
 		window.addEventListener('keydown', this.onKeyDown);
