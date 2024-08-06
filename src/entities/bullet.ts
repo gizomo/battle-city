@@ -51,10 +51,20 @@ export default class Bullet extends Entity {
 			return true;
 		}
 
-		const hitted: Entity | undefined = this.findCollidedEntities(this.position).find((entity: Entity) => Boolean(entity.takeBulletHit) && entity.takeBulletHit!(this));
+		let hitted: boolean = false;
+
+		this.findCollidedEntities(this.position).forEach((entity: Entity) => {
+			if (entity.takeBulletHit) {
+				const result: boolean = entity.takeBulletHit(this);
+
+				if (!hitted) {
+					hitted = result;
+				}
+			}
+		});
 
 		if (hitted) {
-			if (CONSTS.BULLET !== hitted.getType()) {
+			if (hitted) {
 				this.manager.generateEffect(CONSTS.EFFECT_SMALLEXPLOSION, this);
 			}
 
