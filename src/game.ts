@@ -123,6 +123,10 @@ export default class Game {
 		}
 	}
 
+	private saveFortress(): void {
+		this.fortress = this.entitiesManager.getFortress();
+	}
+
 	private restoreFortress(): void {
 		if (this.fortress.length) {
 			this.entitiesManager.restoreFortress(this.fortress);
@@ -177,7 +181,8 @@ export default class Game {
 
 		if (this.level > 0) {
 			this.level--;
-			// this.entitiesManager.destroyLevel();
+			this.saveFortress();
+			this.entitiesManager.reset();
 			this.prepareLevel();
 		}
 	}
@@ -187,7 +192,8 @@ export default class Game {
 
 		if (this.level < 34) {
 			this.level++;
-			// this.entitiesManager.destroyLevel();
+			this.saveFortress();
+			this.entitiesManager.reset();
 			this.prepareLevel();
 		}
 	}

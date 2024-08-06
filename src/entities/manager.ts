@@ -87,6 +87,26 @@ export default class EntitiesManager {
 		this.enemyTanksInPlay.forEach((tank: EnemyTank) => tank.explode());
 	}
 
+	private resetPlayerTanks(): void {
+		this.playerTanks.forEach((tank: PlayerTank) => {
+			tank.kill();
+			tank.reset();
+		});
+	}
+
+	public reset(): void {
+		this.terrain.length = 0;
+		this.bricks.length = 0;
+		this.enemyTanks.length = 0;
+		this.enemyTanksInPlay.length = 0;
+		this.bullets.length = 0;
+		this.effects.length = 0;
+		this.resetPlayerTanks();
+		this.powerups.length = 0;
+		this.trees.length = 0;
+		this.statue.length = 0;
+	}
+
 	public resetSpawnTimer(): void {
 		this.spawnTimer = 0;
 	}
@@ -134,13 +154,16 @@ export default class EntitiesManager {
 		);
 	}
 
-	public saveFortress(save: (brick: Brick) => void): void {
-		this.fortressHandle(save);
+	public getFortress(): Brick[] {
+		const bricks: Brick[] = [];
+		this.fortressHandle((brick: Brick) => bricks.push(brick));
+
+		return bricks;
 	}
 
 	public restoreFortress(savedBricks: Brick[]): void {
 		this.removeFortress();
-		this.bricks.concat(savedBricks);
+		this.bricks.push(...savedBricks);
 	}
 
 	public removeFortress(): void {

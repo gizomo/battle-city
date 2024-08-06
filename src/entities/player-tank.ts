@@ -200,6 +200,7 @@ export default class PlayerTank extends Entity {
 
 		this.frozen = true;
 		this.position = this.defaults.position;
+		this.bulletsAlive = 0;
 
 		this.manager.generateEffect(CONSTS.EFFECT_SPAWNFLASH, this, () => {
 			this.orientation = this.defaults.orientation;
