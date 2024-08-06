@@ -21,7 +21,7 @@ export default class Menu {
 	public update(): void {
 		setInterval(() => Gamepads.initForMenu(), 3000);
 
-		if (Keyboard.handleKey(KEYS.ACTION) || Keyboard.handleKey(KEYS.ACTION1)) {
+		if (Keyboard.handleKey(KEYS.ACTION1)) {
 			if (!this.levelsSelectionEnabled && !this.helpEnabled) {
 				switch (this.selected) {
 					case 0:

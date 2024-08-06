@@ -14,11 +14,11 @@ export default class Effect extends Entity {
 	protected type: CONSTS = CONSTS.EFFECT_POINTS;
 
 	private static readonly options: Record<number, EffectOptions> = {
-		[CONSTS.EFFECT_SPAWNFLASH]: { frames: 4, cycles: 3, speed: 2.5 },
-		[CONSTS.EFFECT_SMALLEXPLOSION]: { frames: 3, cycles: 4, speed: 0.5 },
-		[CONSTS.EFFECT_LARGEEXPLOSION]: { frames: 2, cycles: 4, speed: 1 },
-		[CONSTS.EFFECT_INVULNERABLE]: { frames: 2, cycles: 2, speed: 50 },
-		[CONSTS.EFFECT_POINTS]: { frames: 1, cycles: 15, speed: 1 },
+		[CONSTS.EFFECT_SPAWNFLASH]: { frames: 4, cycles: 2.5, speed: 3 },
+		[CONSTS.EFFECT_SMALLEXPLOSION]: { frames: 3, cycles: 0.5, speed: 4 },
+		[CONSTS.EFFECT_LARGEEXPLOSION]: { frames: 2, cycles: 1, speed: 4 },
+		[CONSTS.EFFECT_INVULNERABLE]: { frames: 2, cycles: 50, speed: 2 },
+		[CONSTS.EFFECT_POINTS]: { frames: 1, cycles: 1, speed: 15 },
 	};
 
 	private target: Entity & { hasStrongField?: () => boolean; points?: number };

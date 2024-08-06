@@ -153,7 +153,7 @@ export default class EntitiesManager {
 
 	public generatePlayerTank(type: CONSTS, gamepad?: Gamepad): void {
 		const position: Position = {
-			x: GRID_STEP + (GAME_CANVAS.width / 13) * (CONSTS.TANK_PLAYER1 === type ? 4 : 8),
+			x: GRID_STEP + (GAME_CANVAS.width / 13) * (CONSTS.TANK_PLAYER2 === type ? 4 : 8),
 			y: GRID_STEP + (GAME_CANVAS.height / 13) * 12,
 		};
 

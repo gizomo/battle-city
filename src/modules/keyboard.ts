@@ -12,11 +12,11 @@ class Keyboard {
 	@bind
 	private onKeyDown(event: KeyboardEvent): void {
 		if (
-			event.keyCode === KEYS.ACTION ||
-			event.keyCode === KEYS.UP2 || // UP ARROW
-			event.keyCode === KEYS.DOWN2 || // DOWN ARROW
-			event.keyCode === KEYS.LEFT2 || // LEFT ARROW
-			event.keyCode === KEYS.RIGHT2 // RIGHT ARROW
+			event.keyCode === KEYS.ACTION1 ||
+			event.keyCode === KEYS.UP1 || // UP ARROW
+			event.keyCode === KEYS.DOWN1 || // DOWN ARROW
+			event.keyCode === KEYS.LEFT1 || // LEFT ARROW
+			event.keyCode === KEYS.RIGHT1 // RIGHT ARROW
 		) {
 			event.preventDefault();
 			event.stopPropagation();

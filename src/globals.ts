@@ -89,19 +89,18 @@ export enum SOUNDS {
 }
 
 export enum KEYS {
-	ACTION1 = 32,
-	UP1 = 87,
-	DOWN1 = 83,
-	LEFT1 = 65,
-	RIGHT1 = 68,
+	ACTION1 = 13,
+	UP1 = 38,
+	DOWN1 = 40,
+	LEFT1 = 37,
+	RIGHT1 = 39,
 
-	ACTION2 = 17,
-	UP2 = 38,
-	DOWN2 = 40,
-	LEFT2 = 37,
-	RIGHT2 = 39,
+	ACTION2 = 32,
+	UP2 = 87,
+	DOWN2 = 83,
+	LEFT2 = 65,
+	RIGHT2 = 68,
 
-	ACTION = 13,
 	CLEAR = 67,
 	STEP = 79,
 	PAUSE = 80,
