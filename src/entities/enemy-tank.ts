@@ -271,7 +271,7 @@ export default class EnemyTank extends Entity {
 
 	public explode(): void {
 		this.kill();
-		const target: EnemyTank = { ...this, points: 0 };
+		const target: EnemyTank = { ...this, position: this.position, points: 0 };
 		this.manager.generateEffect(CONSTS.EFFECT_LARGEEXPLOSION, target, () => this.manager.generateEffect(CONSTS.EFFECT_POINTS, target));
 	}
 

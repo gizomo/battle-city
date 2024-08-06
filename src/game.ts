@@ -201,12 +201,12 @@ export default class Game {
 	private drawInfo(): void {
 		getPlayerIcon(1).drawScaledAt(BG_CTX, 685, 390);
 		getPlayerTankIcon().drawScaledAt(BG_CTX, 670, 422);
-		getNumber(Math.min(9, this.entitiesManager.getPlayerTank(0).getLifes())).drawScaledAt(BG_CTX, 695, 422);
+		getNumber(Math.min(9, this.entitiesManager.getPlayerTank(0)?.getLifes() ?? 0)).drawScaledAt(BG_CTX, 695, 422);
 
 		if (this.hasSecondPlayer()) {
 			getPlayerIcon(2).drawScaledAt(BG_CTX, 685, 470);
 			getPlayerTankIcon().drawScaledAt(BG_CTX, 670, 502);
-			getNumber(Math.min(9, this.entitiesManager.getPlayerTank(1).getLifes())).drawScaledAt(BG_CTX, 695, 502);
+			getNumber(Math.min(9, this.entitiesManager.getPlayerTank(1)?.getLifes() ?? 0)).drawScaledAt(BG_CTX, 695, 502);
 		}
 
 		getFlagIcon().drawScaledAt(BG_CTX, 685, 555);
@@ -304,8 +304,8 @@ export default class Game {
 			}
 		}
 
-		if (!this.gameOverCalled && !this.entitiesManager.getPlayerTank(0).hasLifes()) {
-			if (this.hasSecondPlayer() && !this.entitiesManager.getPlayerTank(1).hasLifes()) {
+		if (!this.gameOverCalled && !this.entitiesManager.getPlayerTank(0)) {
+			if (this.hasSecondPlayer() || !this.entitiesManager.getPlayerTank(1)) {
 				this.gameOverCalled = true;
 				setTimeout(() => this.setGameOver(), 1000);
 			}

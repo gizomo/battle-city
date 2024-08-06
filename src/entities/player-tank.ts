@@ -282,12 +282,7 @@ export default class PlayerTank extends Entity {
 	};
 
 	public update(units: number): boolean {
-		if (this.isKilled()) {
-			return true;
-		}
-
-		if (this.numberOfLives <= -1) {
-			this.kill();
+		if (this.isKilled() && this.numberOfLives <= -1) {
 			return true;
 		}
 
