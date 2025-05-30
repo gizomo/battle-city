@@ -1,11 +1,14 @@
 import EntitiesManager from './entities/manager';
 import Gamepads from './modules/gamepads';
+import Keyboard from './modules/keyboard';
+import Sounds from './modules/sounds';
 import type Brick from './entities/brick';
 import type PlayerTank from './entities/player-tank';
-import { BG_CTX, CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, SCORES } from './globals';
+import { BG_CTX, CONSTS, FIRST_STEP, GAME_CANVAS, GAME_CTX, GRID_SIZE, GRID_STEP, KEYS, SCORES, SPRITE_SCALE } from './globals';
 import { enemies } from './enemies';
-import { getEnemyIcon, getFlagIcon, getGameOver, getNumber, getPlayerIcon, getPlayerTankIcon, Sprite } from './sprites';
+import { getEnemyIcon, getFlagIcon, getGameOver, getNumber, getPlayerIcon, getPlayerTankIcon, getTank, Sprite } from './sprites';
 import { levels } from './levels';
+import { clearCanvas } from './utils';
 
 type ScoreName = Lowercase<keyof typeof SCORES>;
 
@@ -32,6 +35,7 @@ export default class Game {
 	private gameOverPosition: Position = { x: GAME_CANVAS.width / 2, y: GAME_CANVAS.height };
 	private gameOverSprite: Sprite = getGameOver();
 	private nextLevelRequested: boolean = false;
+	private showLevelScore: boolean = false;
 	private level: number;
 
 	private onGameOver: () => void;
@@ -187,7 +191,15 @@ export default class Game {
 		}
 	}
 
+	private levelEnd(): void {
+		Sounds.stopSounds();
+		GAME_CANVAS.style.display = 'none';
+		this.showLevelScore = true;
+	}
+
 	private nextLevel(): void {
+		GAME_CANVAS.style.display = '';
+		this.showLevelScore = false;
 		this.nextLevelRequested = false;
 
 		if (this.level < 34) {
@@ -241,6 +253,96 @@ export default class Game {
 		return levels[`stage_${this.level + 1}`];
 	}
 
+	private drawStats(): void {
+		const headerFont: string = '20px Arial';
+		const centerX: number = BG_CTX.canvas.width / 2;
+
+		clearCanvas(BG_CTX, 'black');
+
+		BG_CTX.fillStyle = 'red';
+		BG_CTX.textAlign = 'left';
+		BG_CTX.font = headerFont;
+		BG_CTX.fillText('HI-SCORE', 220, 60);
+
+		BG_CTX.fillStyle = 'orange';
+		BG_CTX.fillText(String(this.firstPlayerStats.points + this.secondPlayerStats.points), 420, 60);
+
+		BG_CTX.fillStyle = 'white';
+		BG_CTX.textAlign = 'center';
+		BG_CTX.fillText(`STAGE ${this.level + 1}`, centerX, 120);
+
+		BG_CTX.save();
+		BG_CTX.scale(2, 2);
+		const scaledX: number = centerX / 2 - 7;
+		getTank(CONSTS.TANK_ENEMY_BASIC, CONSTS.TANK_POWER_NONE, CONSTS.DIRECTION_UP, 0).drawAt(BG_CTX, scaledX, 236 / 2);
+		getTank(CONSTS.TANK_ENEMY_FAST, CONSTS.TANK_POWER_NONE, CONSTS.DIRECTION_UP, 0).drawAt(BG_CTX, scaledX, 286 / 2);
+		getTank(CONSTS.TANK_ENEMY_POWER, CONSTS.TANK_POWER_NONE, CONSTS.DIRECTION_UP, 0).drawAt(BG_CTX, scaledX, 336 / 2);
+		getTank(CONSTS.TANK_ENEMY_ARMOR, CONSTS.TANK_POWER_NONE, CONSTS.DIRECTION_UP, 0).drawAt(BG_CTX, scaledX, 386 / 2);
+		BG_CTX.restore();
+
+		const basic: number = this.firstPlayerStats[this.level + 1].basic;
+		const fast: number = this.firstPlayerStats[this.level + 1].fast;
+		const power: number = this.firstPlayerStats[this.level + 1].power;
+		const armor: number = this.firstPlayerStats[this.level + 1].armor;
+		BG_CTX.fillStyle = 'red';
+		BG_CTX.textAlign = 'right';
+		BG_CTX.fillText('I PLAYER', 280, 180);
+
+		BG_CTX.fillStyle = 'orange';
+		BG_CTX.fillText(String(this.firstPlayerStats.points), 280, 220);
+
+		BG_CTX.fillStyle = 'white';
+		const leftX: number = centerX - 20;
+		BG_CTX.fillText(String(basic) + '  🠸 ', leftX, 260);
+		BG_CTX.fillText(String(fast) + '  🠸 ', leftX, 310);
+		BG_CTX.fillText(String(power) + '  🠸 ', leftX, 360);
+		BG_CTX.fillText(String(armor) + '  🠸 ', leftX, 410);
+
+		BG_CTX.fillText(String(basic * SCORES.BASIC), 280, 260);
+		BG_CTX.fillText(String(fast * SCORES.FAST), 280, 310);
+		BG_CTX.fillText(String(power * SCORES.POWER), 280, 360);
+		BG_CTX.fillText(String(armor * SCORES.ARMOR), 280, 410);
+
+		BG_CTX.textAlign = 'left';
+		BG_CTX.fillText(String(basic + fast + power + armor), 311, 460);
+
+		if (this.hasSecondPlayer()) {
+			const basic: number = this.secondPlayerStats[this.level + 1].basic;
+			const fast: number = this.secondPlayerStats[this.level + 1].fast;
+			const power: number = this.secondPlayerStats[this.level + 1].power;
+			const armor: number = this.secondPlayerStats[this.level + 1].armor;
+			BG_CTX.fillStyle = 'red';
+			BG_CTX.textAlign = 'left';
+			BG_CTX.fillText('II PLAYER', 460, 180);
+
+			BG_CTX.fillStyle = 'orange';
+			BG_CTX.fillText(String(this.secondPlayerStats.points), 460, 220);
+
+			BG_CTX.fillStyle = 'white';
+			const leftX: number = centerX + 20;
+			BG_CTX.fillText(' 🠺  ' + String(basic), leftX, 260);
+			BG_CTX.fillText(' 🠺  ' + String(fast), leftX, 310);
+			BG_CTX.fillText(' 🠺  ' + String(power), leftX, 360);
+			BG_CTX.fillText(' 🠺  ' + String(armor), leftX, 410);
+
+			BG_CTX.fillText(String(basic * SCORES.BASIC), 460, 260);
+			BG_CTX.fillText(String(fast * SCORES.FAST), 460, 310);
+			BG_CTX.fillText(String(power * SCORES.POWER), 460, 360);
+			BG_CTX.fillText(String(armor * SCORES.ARMOR), 460, 410);
+
+			BG_CTX.textAlign = 'center';
+			BG_CTX.fillText('___________', centerX, 430);
+			BG_CTX.textAlign = 'right';
+			BG_CTX.fillText(String(basic + fast + power + armor), 427, 460);
+		} else {
+			BG_CTX.textAlign = 'right';
+			BG_CTX.fillText('_______', centerX + 15, 430);
+		}
+
+		BG_CTX.textAlign = 'right';
+		BG_CTX.fillText('TOTAL', 280, 460);
+	}
+
 	private updateStats(stats: GameStats, points: number, score: ScoreName): void {
 		stats.points += points;
 
@@ -291,6 +393,14 @@ export default class Game {
 	}
 
 	public update(units: number): void {
+		if (this.showLevelScore) {
+			if (Keyboard.handleKey(KEYS.ACTION1)) {
+				this.nextLevel();
+			}
+
+			return;
+		}
+
 		this.updateGamepads();
 
 		this.entitiesManager.update(units);
@@ -324,17 +434,21 @@ export default class Game {
 
 		if (!this.nextLevelRequested && !this.entitiesManager.hasEnemies()) {
 			this.nextLevelRequested = true;
-			setTimeout(() => this.nextLevel(), 2000);
+			setTimeout(() => this.levelEnd(), 2000);
 		}
 	}
 
 	public render(): void {
-		this.entitiesManager.render();
+		if (this.showLevelScore) {
+			this.drawStats();
+		} else {
+			this.entitiesManager.render();
 
-		if (this.gameOver) {
-			this.gameOverSprite.drawScaledAt(GAME_CTX, this.gameOverPosition.x, this.gameOverPosition.y);
+			if (this.gameOver) {
+				this.gameOverSprite.drawScaledAt(GAME_CTX, this.gameOverPosition.x, this.gameOverPosition.y);
+			}
+
+			this.drawInfo();
 		}
-
-		this.drawInfo();
 	}
 }
