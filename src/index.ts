@@ -100,6 +100,10 @@ class BattleCity {
 		return this.updatePaused && !Keyboard.handleKey(KEYS.STEP);
 	}
 
+	private shouldInterruptGame(): boolean {
+		return Keyboard.handleKey(KEYS.EXIT);
+	}
+
 	@bind
 	private iterate(frameTimeStamp: number): void {
 		this.updateClocks(frameTimeStamp);
@@ -117,6 +121,11 @@ class BattleCity {
 	}
 
 	private update(delta: number): void {
+		if (this.shouldInterruptGame()) {
+			this.endGame();
+			return;
+		}
+
 		if (this.shouldSkipUpdate()) {
 			return;
 		}

@@ -101,6 +101,7 @@ export enum KEYS {
 	LEFT2 = 65,
 	RIGHT2 = 68,
 
+	EXIT = 27,
 	CLEAR = 67,
 	STEP = 79,
 	PAUSE = 80,
